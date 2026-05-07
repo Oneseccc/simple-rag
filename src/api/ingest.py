@@ -74,7 +74,9 @@ async def ingest_documents(request: IngestRequest):
         metadatas=metadatas,
     )
 
-    get_cache().clear()
+    cache = get_cache()
+    cache.clear()
+    cache.index_chunks(all_chunks)
 
     return IngestResponse(
         documents_processed=docs_processed,

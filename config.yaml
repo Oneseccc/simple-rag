@@ -1,0 +1,10 @@
+chunking:
+  chunk_size: 512
+  chunk_overlap: 50
+  headers_to_split_on:
+    - ["#", "h1"]
+    - ["##", "h2"]
+    - ["###", "h3"]
+
+retrieval:
+  top_k: 5

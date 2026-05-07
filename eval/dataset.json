@@ -1,0 +1,134 @@
+[
+  {
+    "question": "What is the maximum number of tools you can pass in a single API request to Claude?",
+    "ground_truth_answer": "You can pass up to 128 tools in a single API request.",
+    "ground_truth_context": "The maximum number of tools that can be defined in a single API request is 128.",
+    "category": "factual"
+  },
+  {
+    "question": "What is the context window size for Claude Opus 4.7?",
+    "ground_truth_answer": "Claude Opus 4.7 has a context window of 200K tokens, extendable up to 1M tokens with extended context.",
+    "ground_truth_context": "Context window: 200K tokens (up to 1M with extended context)",
+    "category": "factual"
+  },
+  {
+    "question": "What is the model ID for Claude Sonnet 4.6?",
+    "ground_truth_answer": "The model ID for Claude Sonnet 4.6 is claude-sonnet-4-6.",
+    "ground_truth_context": "Model ID: claude-sonnet-4-6",
+    "category": "factual"
+  },
+  {
+    "question": "What is the minimum cacheable prompt prefix length for Claude Haiku?",
+    "ground_truth_answer": "The minimum cacheable prompt prefix length for Claude Haiku is 2,048 tokens.",
+    "ground_truth_context": "Claude Haiku: 2,048 tokens",
+    "category": "factual"
+  },
+  {
+    "question": "What is the maximum output token limit for Claude Sonnet 4.6?",
+    "ground_truth_answer": "The maximum output for Claude Sonnet 4.6 is 16,384 tokens.",
+    "ground_truth_context": "Claude Sonnet 4.6 | 200K tokens | 16,384 tokens",
+    "category": "factual"
+  },
+  {
+    "question": "How much does the Batch API reduce costs compared to standard API calls?",
+    "ground_truth_answer": "The Batch API provides a 50% cost reduction compared to standard API calls.",
+    "ground_truth_context": "50% cost reduction compared to standard API calls",
+    "category": "factual"
+  },
+  {
+    "question": "What image formats does Claude support?",
+    "ground_truth_answer": "Claude supports JPEG, PNG, GIF, and WebP image formats.",
+    "ground_truth_context": "Supported Formats: JPEG, PNG, GIF, WebP",
+    "category": "factual"
+  },
+  {
+    "question": "What is the input token price for Claude Haiku 4.5?",
+    "ground_truth_answer": "Claude Haiku 4.5 costs $0.80 per million input tokens.",
+    "ground_truth_context": "Input tokens | $0.80 / MTok",
+    "category": "factual"
+  },
+  {
+    "question": "What is the maximum number of images Claude can process per request?",
+    "ground_truth_answer": "Claude can process up to 20 images per request.",
+    "ground_truth_context": "Up to 20 images per request",
+    "category": "factual"
+  },
+  {
+    "question": "Which Claude models support extended thinking, and what is the maximum budget for thinking tokens?",
+    "ground_truth_answer": "Extended thinking is available on Claude Opus 4.7 and Claude Sonnet 4.6. The maximum budget for thinking tokens is 128,000 tokens.",
+    "ground_truth_context": "Only available on Claude Opus 4.7 and Claude Sonnet 4.6. Maximum: 128,000 tokens.",
+    "category": "multi-hop"
+  },
+  {
+    "question": "If I want to use the cheapest model with prompt caching, what is the cache read price and what is the minimum cacheable length?",
+    "ground_truth_answer": "The cheapest model is Claude Haiku 4.5 with a cache read price of $0.08/MTok and a minimum cacheable length of 2,048 tokens.",
+    "ground_truth_context": "Claude Haiku 4.5: Prompt caching read $0.08/MTok. Claude Haiku: 2,048 tokens minimum cacheable.",
+    "category": "multi-hop"
+  },
+  {
+    "question": "Which model has the largest maximum output and what is its batch API output price?",
+    "ground_truth_answer": "Claude Opus 4.7 has the largest maximum output at 32,768 tokens (up to 128K with extended thinking), and its batch API output price is $37.50/MTok.",
+    "ground_truth_context": "Claude Opus 4.7: Max output 32,768 tokens. Batch output $37.50/MTok.",
+    "category": "multi-hop"
+  },
+  {
+    "question": "For a RAG system using Claude, what embedding model dimensions and chunk size are recommended?",
+    "ground_truth_answer": "Recommended embedding models include all-MiniLM-L6-v2 (384 dimensions) and nomic-embed-text (768 dimensions). Recommended chunk size is 256-1024 tokens with 10-20% overlap.",
+    "ground_truth_context": "all-MiniLM-L6-v2: 384 dimensions. nomic-embed-text: 768 dimensions. Chunk Size: Use 256-1024 tokens.",
+    "category": "multi-hop"
+  },
+  {
+    "question": "How can I use prompt caching with the batch API to minimize costs for Claude Sonnet?",
+    "ground_truth_answer": "For Claude Sonnet 4.6, use prompt caching with cache_control breakpoints (cache read at $0.30/MTok) combined with the batch API (batch input at $1.50/MTok, batch output at $7.50/MTok) for maximum savings. The minimum cacheable length is 1,024 tokens.",
+    "ground_truth_context": "Claude Sonnet 4.6: Prompt caching read $0.30/MTok. Batch input $1.50/MTok. Minimum cacheable: 1,024 tokens.",
+    "category": "multi-hop"
+  },
+  {
+    "question": "What is Anthropic's annual revenue for 2025?",
+    "ground_truth_answer": "This information is not available in the documentation.",
+    "ground_truth_context": "",
+    "category": "no-answer"
+  },
+  {
+    "question": "How does Claude's RLHF training process work internally?",
+    "ground_truth_answer": "This information is not available in the documentation. The docs do not describe Claude's internal training process.",
+    "ground_truth_context": "",
+    "category": "no-answer"
+  },
+  {
+    "question": "What is the exact number of parameters in Claude Opus 4.7?",
+    "ground_truth_answer": "This information is not available in the documentation. Anthropic does not publicly disclose model parameter counts.",
+    "ground_truth_context": "",
+    "category": "no-answer"
+  },
+  {
+    "question": "Can Claude generate images or create visual content?",
+    "ground_truth_answer": "The documentation does not mention Claude having image generation capabilities. Claude can analyze images but there is no documentation about generating them.",
+    "ground_truth_context": "",
+    "category": "no-answer"
+  },
+  {
+    "question": "How many tokens can Opus 4.7 handle as input?",
+    "ground_truth_answer": "Claude Opus 4.7 can handle 200K tokens as input, extendable up to 1M tokens with extended context.",
+    "ground_truth_context": "Context window: 200K tokens (up to 1M with extended context)",
+    "category": "paraphrased"
+  },
+  {
+    "question": "What's the cost per million input tokens for the cheapest Claude model?",
+    "ground_truth_answer": "The cheapest Claude model is Haiku 4.5 at $0.80 per million input tokens.",
+    "ground_truth_context": "Claude Haiku 4.5: Input tokens $0.80 / MTok",
+    "category": "paraphrased"
+  },
+  {
+    "question": "How do I install Anthropic's command-line coding tool?",
+    "ground_truth_answer": "Install Claude Code with: npm install -g @anthropic-ai/claude-code",
+    "ground_truth_context": "npm install -g @anthropic-ai/claude-code",
+    "category": "paraphrased"
+  },
+  {
+    "question": "What is the cache lifetime for prompt caching in Claude?",
+    "ground_truth_answer": "Cached prompts have a minimum lifetime of 5 minutes. Each time a cached prompt is used, the lifetime is extended by 5 minutes.",
+    "ground_truth_context": "Cached prompts have a minimum lifetime of 5 minutes. Each time a cached prompt is used, the lifetime is extended by 5 minutes.",
+    "category": "factual"
+  }
+]

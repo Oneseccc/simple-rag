@@ -1,0 +1,16 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+chroma-data/
+ollama-data/
+*.egg
+.mypy_cache/
+.pytest_cache/
+.venv/
+venv/
+.deepeval/

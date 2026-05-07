@@ -1,0 +1,1168 @@
+[
+  {
+    "question": "What is the maximum number of tools you can pass in a single API request to Claude?",
+    "ground_truth_answer": "You can pass up to 128 tools in a single API request.",
+    "ground_truth_context": "The maximum number of tools that can be defined in a single API request is 128.",
+    "category": "factual",
+    "actual_answer": "The maximum number of tools that can be defined in a single API request to Claude is 128. Each tool definition counts toward the input token limit [tool-use.md::Tool Use (Function Calling)/Tool Limits::chunk_0].",
+    "retrieved_contexts": [
+      "## Tool Limits  \nThe maximum number of tools that can be defined in a single API request is 128. Each tool definition counts toward the input token limit.",
+      "# Tool Use (Function Calling)  \n## Overview  \nClaude can use tools (also known as function calling) to interact with external systems. You define tools in your API request, and Claude can choose to ca...",
+      "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc...",
+      "## Messages API  \nThe Messages API is the primary way to interact with Claude. It accepts a series of messages and returns a model-generated response.",
+      "# Vision  \n## Overview  \nClaude can analyze images passed in API requests. This enables use cases like document analysis, image description, visual question answering, and more."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "tool-use.md::Tool Use (Function Calling)/Tool Limits::chunk_0",
+        "source_file": "tool-use.md",
+        "section": "Tool Use (Function Calling)/Tool Limits",
+        "relevance_score": 0.7552,
+        "text_preview": "## Tool Limits  \nThe maximum number of tools that can be defined in a single API request is 128. Each tool definition counts toward the input token limit."
+      },
+      {
+        "chunk_id": "tool-use.md::Tool Use (Function Calling)/Overview::chunk_0",
+        "source_file": "tool-use.md",
+        "section": "Tool Use (Function Calling)/Overview",
+        "relevance_score": 0.6002,
+        "text_preview": "# Tool Use (Function Calling)  \n## Overview  \nClaude can use tools (also known as function calling) to interact with external systems. You define tools in your API request, and Claude can choose to ca..."
+      },
+      {
+        "chunk_id": "extended-thinking.md::Extended Thinking/Budget Tokens::chunk_0",
+        "source_file": "extended-thinking.md",
+        "section": "Extended Thinking/Budget Tokens",
+        "relevance_score": 0.5178,
+        "text_preview": "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc..."
+      },
+      {
+        "chunk_id": "api-basics.md::Claude API Basics/Messages API::chunk_0",
+        "source_file": "api-basics.md",
+        "section": "Claude API Basics/Messages API",
+        "relevance_score": 0.4903,
+        "text_preview": "## Messages API  \nThe Messages API is the primary way to interact with Claude. It accepts a series of messages and returns a model-generated response."
+      },
+      {
+        "chunk_id": "vision.md::Vision/Overview::chunk_0",
+        "source_file": "vision.md",
+        "section": "Vision/Overview",
+        "relevance_score": 0.4505,
+        "text_preview": "# Vision  \n## Overview  \nClaude can analyze images passed in API requests. This enables use cases like document analysis, image description, visual question answering, and more."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "What is the context window size for Claude Opus 4.7?",
+    "ground_truth_answer": "Claude Opus 4.7 has a context window of 200K tokens, extendable up to 1M tokens with extended context.",
+    "ground_truth_context": "Context window: 200K tokens (up to 1M with extended context)",
+    "category": "factual",
+    "actual_answer": "The context window size for Claude Opus 4.7 is 200K tokens, but it also supports an extended context window of up to 1 million tokens [context-window.md::Context Window and Token Limits/Context Window Sizes::chunk_0]. This extended context window is automatically available, requiring no special configuration [context-window.md::Context Window and Token Limits/Extended Context (Opus 4.7)::chunk_0]. \n\nFor more details on token limits, you can refer to [token-counting.md::Token Counting/Context Window Limits::chunk_0], which also lists the context window as 200,000 tokens. \n\nTherefore, to summarize: \n- Standard context window: 200K tokens \n- Extended context window: 1M tokens.",
+    "retrieved_contexts": [
+      "## Extended Context (Opus 4.7)  \nClaude Opus 4.7 supports an extended context window of up to 1 million tokens. This is automatically available \u2014 no special configuration needed.",
+      "# Context Window and Token Limits  \n## Context Window Sizes  \n| Model | Context Window | Max Output |\n|-------|---------------|------------|\n| Claude Opus 4.7 | 200K tokens (1M with extended) | 32,768...",
+      "## Context Window Limits  \n| Model | Context Window | Max Output Tokens |\n|-------|---------------|-------------------|\n| claude-opus-4-7 | 200,000 | 32,000 |\n| claude-sonnet-4-6 | 200,000 | 16,000 |\n...",
+      "## Alternatives to Fine-Tuning  \nClaude's strong baseline performance and large context window make several alternatives viable:",
+      "## Long Document Summarization  \nFor documents exceeding the context window, use a hierarchical approach:  \n1. Split the document into chunks that fit within the context window.\n2. Summarize each chun..."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "context-window.md::Context Window and Token Limits/Extended Context (Opus 4.7)::chunk_0",
+        "source_file": "context-window.md",
+        "section": "Context Window and Token Limits/Extended Context (Opus 4.7)",
+        "relevance_score": 0.643,
+        "text_preview": "## Extended Context (Opus 4.7)  \nClaude Opus 4.7 supports an extended context window of up to 1 million tokens. This is automatically available \u2014 no special configuration needed."
+      },
+      {
+        "chunk_id": "context-window.md::Context Window and Token Limits/Context Window Sizes::chunk_0",
+        "source_file": "context-window.md",
+        "section": "Context Window and Token Limits/Context Window Sizes",
+        "relevance_score": 0.6293,
+        "text_preview": "# Context Window and Token Limits  \n## Context Window Sizes  \n| Model | Context Window | Max Output |\n|-------|---------------|------------|\n| Claude Opus 4.7 | 200K tokens (1M with extended) | 32,768..."
+      },
+      {
+        "chunk_id": "token-counting.md::Token Counting/Context Window Limits::chunk_0",
+        "source_file": "token-counting.md",
+        "section": "Token Counting/Context Window Limits",
+        "relevance_score": 0.5607,
+        "text_preview": "## Context Window Limits  \n| Model | Context Window | Max Output Tokens |\n|-------|---------------|-------------------|\n| claude-opus-4-7 | 200,000 | 32,000 |\n| claude-sonnet-4-6 | 200,000 | 16,000 |\n..."
+      },
+      {
+        "chunk_id": "fine-tuning.md::Fine-Tuning/Alternatives to Fine-Tuning::chunk_0",
+        "source_file": "fine-tuning.md",
+        "section": "Fine-Tuning/Alternatives to Fine-Tuning",
+        "relevance_score": 0.5602,
+        "text_preview": "## Alternatives to Fine-Tuning  \nClaude's strong baseline performance and large context window make several alternatives viable:"
+      },
+      {
+        "chunk_id": "summarization.md::Summarization/Long Document Summarization::chunk_0",
+        "source_file": "summarization.md",
+        "section": "Summarization/Long Document Summarization",
+        "relevance_score": 0.5508,
+        "text_preview": "## Long Document Summarization  \nFor documents exceeding the context window, use a hierarchical approach:  \n1. Split the document into chunks that fit within the context window.\n2. Summarize each chun..."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "What is the model ID for Claude Sonnet 4.6?",
+    "ground_truth_answer": "The model ID for Claude Sonnet 4.6 is claude-sonnet-4-6.",
+    "ground_truth_context": "Model ID: claude-sonnet-4-6",
+    "category": "factual",
+    "actual_answer": "The model ID for Claude Sonnet 4.6 is `claude-sonnet-4-6`. This information can be found in [models-overview.md::Claude Models Overview/Latest Models/Claude Sonnet 4.6::chunk_0] and is also listed in the Current Model Identifiers table in [migration-guide.md::Migration Guide/Current Model Identifiers::chunk_0].",
+    "retrieved_contexts": [
+      "### Claude Sonnet 4.6\nClaude Sonnet 4.6 offers the best balance of speed and intelligence. It's the recommended model for most use cases.  \n- **Context window**: 200K tokens\n- **Max output**: 16,384 t...",
+      "## Current Model Identifiers  \n| Model Family | Latest ID | Previous ID |\n|-------------|----------|-------------|\n| Opus | `claude-opus-4-7` | `claude-opus-4-5-20250120` |\n| Sonnet | `claude-sonnet-4...",
+      "## CLAUDE.md  \nCLAUDE.md is a special file that Claude Code reads for project-specific context. Place it in your project root to provide:\n- Project overview and architecture\n- Coding conventions\n- Bui...",
+      "## Model Selection  \n- **claude-haiku-4-5-20251001**: Best for high-volume classification. Fast and cost-effective.\n- **claude-sonnet-4-6**: Good balance of accuracy and speed for nuanced classificati...",
+      "## Messages API  \nThe Messages API is the primary way to interact with Claude. It accepts a series of messages and returns a model-generated response."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "models-overview.md::Claude Models Overview/Latest Models/Claude Sonnet 4.6::chunk_0",
+        "source_file": "models-overview.md",
+        "section": "Claude Models Overview/Latest Models/Claude Sonnet 4.6",
+        "relevance_score": 0.592,
+        "text_preview": "### Claude Sonnet 4.6\nClaude Sonnet 4.6 offers the best balance of speed and intelligence. It's the recommended model for most use cases.  \n- **Context window**: 200K tokens\n- **Max output**: 16,384 t..."
+      },
+      {
+        "chunk_id": "migration-guide.md::Migration Guide/Current Model Identifiers::chunk_0",
+        "source_file": "migration-guide.md",
+        "section": "Migration Guide/Current Model Identifiers",
+        "relevance_score": 0.511,
+        "text_preview": "## Current Model Identifiers  \n| Model Family | Latest ID | Previous ID |\n|-------------|----------|-------------|\n| Opus | `claude-opus-4-7` | `claude-opus-4-5-20250120` |\n| Sonnet | `claude-sonnet-4..."
+      },
+      {
+        "chunk_id": "claude-code.md::Claude Code/CLAUDE.md::chunk_0",
+        "source_file": "claude-code.md",
+        "section": "Claude Code/CLAUDE.md",
+        "relevance_score": 0.4736,
+        "text_preview": "## CLAUDE.md  \nCLAUDE.md is a special file that Claude Code reads for project-specific context. Place it in your project root to provide:\n- Project overview and architecture\n- Coding conventions\n- Bui..."
+      },
+      {
+        "chunk_id": "text-classification.md::Text Classification/Model Selection::chunk_0",
+        "source_file": "text-classification.md",
+        "section": "Text Classification/Model Selection",
+        "relevance_score": 0.4712,
+        "text_preview": "## Model Selection  \n- **claude-haiku-4-5-20251001**: Best for high-volume classification. Fast and cost-effective.\n- **claude-sonnet-4-6**: Good balance of accuracy and speed for nuanced classificati..."
+      },
+      {
+        "chunk_id": "api-basics.md::Claude API Basics/Messages API::chunk_0",
+        "source_file": "api-basics.md",
+        "section": "Claude API Basics/Messages API",
+        "relevance_score": 0.4644,
+        "text_preview": "## Messages API  \nThe Messages API is the primary way to interact with Claude. It accepts a series of messages and returns a model-generated response."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "What is the minimum cacheable prompt prefix length for Claude Haiku?",
+    "ground_truth_answer": "The minimum cacheable prompt prefix length for Claude Haiku is 2,048 tokens.",
+    "ground_truth_context": "Claude Haiku: 2,048 tokens",
+    "category": "factual",
+    "actual_answer": "The minimum cacheable prompt prefix length for Claude Haiku is 2,048 tokens [prompt-caching.md::chunk_0].",
+    "retrieved_contexts": [
+      "## Minimum Cacheable Length  \nThe minimum cacheable prompt prefix length varies by model:\n- **Claude Opus**: 1,024 tokens\n- **Claude Sonnet**: 1,024 tokens\n- **Claude Haiku**: 2,048 tokens",
+      "## Cost Optimization Tips  \n1. Use prompt caching for repeated prefixes\n2. Use batch API for non-real-time workloads (50% discount)\n3. Choose the right model for your task (Haiku for simple tasks)\n4. ...",
+      "### Claude Haiku 4.5\nClaude Haiku 4.5 is the fastest and most cost-effective model, ideal for lightweight tasks and high-volume applications.  \n- **Context window**: 200K tokens\n- **Max output**: 8,19...",
+      "### Claude Haiku 4.5\n| Feature | Price |\n|---------|-------|\n| Input tokens | $0.80 / MTok |\n| Output tokens | $4 / MTok |\n| Prompt caching write | $1 / MTok |\n| Prompt caching read | $0.08 / MTok |\n|...",
+      "## How It Works  \nWhen you send a request with prompt caching enabled, Anthropic's infrastructure:\n1. Checks if a prefix of your prompt is already cached\n2. If cached, uses the cached version (cache h..."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Minimum Cacheable Length::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Minimum Cacheable Length",
+        "relevance_score": 0.7746,
+        "text_preview": "## Minimum Cacheable Length  \nThe minimum cacheable prompt prefix length varies by model:\n- **Claude Opus**: 1,024 tokens\n- **Claude Sonnet**: 1,024 tokens\n- **Claude Haiku**: 2,048 tokens"
+      },
+      {
+        "chunk_id": "pricing.md::Claude API Pricing/Cost Optimization Tips::chunk_0",
+        "source_file": "pricing.md",
+        "section": "Claude API Pricing/Cost Optimization Tips",
+        "relevance_score": 0.5647,
+        "text_preview": "## Cost Optimization Tips  \n1. Use prompt caching for repeated prefixes\n2. Use batch API for non-real-time workloads (50% discount)\n3. Choose the right model for your task (Haiku for simple tasks)\n4. ..."
+      },
+      {
+        "chunk_id": "models-overview.md::Claude Models Overview/Latest Models/Claude Haiku 4.5::chunk_0",
+        "source_file": "models-overview.md",
+        "section": "Claude Models Overview/Latest Models/Claude Haiku 4.5",
+        "relevance_score": 0.5544,
+        "text_preview": "### Claude Haiku 4.5\nClaude Haiku 4.5 is the fastest and most cost-effective model, ideal for lightweight tasks and high-volume applications.  \n- **Context window**: 200K tokens\n- **Max output**: 8,19..."
+      },
+      {
+        "chunk_id": "pricing.md::Claude API Pricing/Model Pricing/Claude Haiku 4.5::chunk_0",
+        "source_file": "pricing.md",
+        "section": "Claude API Pricing/Model Pricing/Claude Haiku 4.5",
+        "relevance_score": 0.4396,
+        "text_preview": "### Claude Haiku 4.5\n| Feature | Price |\n|---------|-------|\n| Input tokens | $0.80 / MTok |\n| Output tokens | $4 / MTok |\n| Prompt caching write | $1 / MTok |\n| Prompt caching read | $0.08 / MTok |\n|..."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/How It Works::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/How It Works",
+        "relevance_score": 0.4336,
+        "text_preview": "## How It Works  \nWhen you send a request with prompt caching enabled, Anthropic's infrastructure:\n1. Checks if a prefix of your prompt is already cached\n2. If cached, uses the cached version (cache h..."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "What is the maximum output token limit for Claude Sonnet 4.6?",
+    "ground_truth_answer": "The maximum output for Claude Sonnet 4.6 is 16,384 tokens.",
+    "ground_truth_context": "Claude Sonnet 4.6 | 200K tokens | 16,384 tokens",
+    "category": "factual",
+    "actual_answer": "The maximum output token limit for Claude Sonnet 4.6 is 16,384 tokens. This information can be found in two places: \n\n* In the Claude Models Overview section, which states that Claude Sonnet 4.6 has a max output of 16,384 tokens [models-overview.md::Claude Models Overview/Latest Models/Claude Sonnet 4.6::chunk_0].\n* In the Context Window and Token Limits section, which lists Claude Sonnet 4.6 as having a max output of 16,384 tokens [context-window.md::Context Window and Token Limits/Context Window Sizes::chunk_0].",
+    "retrieved_contexts": [
+      "## Limitations  \n- Only available on Claude Opus 4.7 and Claude Sonnet 4.6\n- Thinking tokens count toward output token limits\n- Cannot be combined with certain features (e.g., streaming in some config...",
+      "### Claude Sonnet 4.6\nClaude Sonnet 4.6 offers the best balance of speed and intelligence. It's the recommended model for most use cases.  \n- **Context window**: 200K tokens\n- **Max output**: 16,384 t...",
+      "# Context Window and Token Limits  \n## Context Window Sizes  \n| Model | Context Window | Max Output |\n|-------|---------------|------------|\n| Claude Opus 4.7 | 200K tokens (1M with extended) | 32,768...",
+      "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc...",
+      "## Minimum Cacheable Length  \nThe minimum cacheable prompt prefix length varies by model:\n- **Claude Opus**: 1,024 tokens\n- **Claude Sonnet**: 1,024 tokens\n- **Claude Haiku**: 2,048 tokens"
+    ],
+    "source_details": [
+      {
+        "chunk_id": "extended-thinking.md::Extended Thinking/Limitations::chunk_0",
+        "source_file": "extended-thinking.md",
+        "section": "Extended Thinking/Limitations",
+        "relevance_score": 0.6332,
+        "text_preview": "## Limitations  \n- Only available on Claude Opus 4.7 and Claude Sonnet 4.6\n- Thinking tokens count toward output token limits\n- Cannot be combined with certain features (e.g., streaming in some config..."
+      },
+      {
+        "chunk_id": "models-overview.md::Claude Models Overview/Latest Models/Claude Sonnet 4.6::chunk_0",
+        "source_file": "models-overview.md",
+        "section": "Claude Models Overview/Latest Models/Claude Sonnet 4.6",
+        "relevance_score": 0.5912,
+        "text_preview": "### Claude Sonnet 4.6\nClaude Sonnet 4.6 offers the best balance of speed and intelligence. It's the recommended model for most use cases.  \n- **Context window**: 200K tokens\n- **Max output**: 16,384 t..."
+      },
+      {
+        "chunk_id": "context-window.md::Context Window and Token Limits/Context Window Sizes::chunk_0",
+        "source_file": "context-window.md",
+        "section": "Context Window and Token Limits/Context Window Sizes",
+        "relevance_score": 0.5907,
+        "text_preview": "# Context Window and Token Limits  \n## Context Window Sizes  \n| Model | Context Window | Max Output |\n|-------|---------------|------------|\n| Claude Opus 4.7 | 200K tokens (1M with extended) | 32,768..."
+      },
+      {
+        "chunk_id": "extended-thinking.md::Extended Thinking/Budget Tokens::chunk_0",
+        "source_file": "extended-thinking.md",
+        "section": "Extended Thinking/Budget Tokens",
+        "relevance_score": 0.5468,
+        "text_preview": "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc..."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Minimum Cacheable Length::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Minimum Cacheable Length",
+        "relevance_score": 0.5282,
+        "text_preview": "## Minimum Cacheable Length  \nThe minimum cacheable prompt prefix length varies by model:\n- **Claude Opus**: 1,024 tokens\n- **Claude Sonnet**: 1,024 tokens\n- **Claude Haiku**: 2,048 tokens"
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "How much does the Batch API reduce costs compared to standard API calls?",
+    "ground_truth_answer": "The Batch API provides a 50% cost reduction compared to standard API calls.",
+    "ground_truth_context": "50% cost reduction compared to standard API calls",
+    "category": "factual",
+    "actual_answer": "The Batch API reduces costs by 50% compared to standard API calls [batch-api.md::Message Batches API/Benefits::chunk_0]. This is also mentioned as a cost optimization tip, suggesting using the batch API for non-real-time workloads to get a 50% discount [pricing.md::Claude API Pricing/Cost Optimization Tips::chunk_0].",
+    "retrieved_contexts": [
+      "## Benefits  \n- **50% cost reduction** compared to standard API calls\n- Process up to 100,000 requests per batch\n- Results available within 24 hours (usually much faster)\n- No rate limit impact on you...",
+      "# Message Batches API  \n## Overview  \nThe Message Batches API allows you to send multiple message requests in a single batch, processing them asynchronously. This is ideal for high-volume workloads th...",
+      "# Claude API Pricing  \n## Model Pricing  \n### Claude Opus 4.7\n| Feature | Price |\n|---------|-------|\n| Input tokens | $15 / MTok |\n| Output tokens | $75 / MTok |\n| Prompt caching write | $18.75 / MTo...",
+      "## Cost Optimization Tips  \n1. Use prompt caching for repeated prefixes\n2. Use batch API for non-real-time workloads (50% discount)\n3. Choose the right model for your task (Haiku for simple tasks)\n4. ...",
+      "# Prompt Caching  \n## Overview  \nPrompt caching allows you to cache frequently used context between API calls, reducing latency by up to 85% and costs by up to 90% for long prompts."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "batch-api.md::Message Batches API/Benefits::chunk_0",
+        "source_file": "batch-api.md",
+        "section": "Message Batches API/Benefits",
+        "relevance_score": 0.8106,
+        "text_preview": "## Benefits  \n- **50% cost reduction** compared to standard API calls\n- Process up to 100,000 requests per batch\n- Results available within 24 hours (usually much faster)\n- No rate limit impact on you..."
+      },
+      {
+        "chunk_id": "batch-api.md::Message Batches API/Overview::chunk_0",
+        "source_file": "batch-api.md",
+        "section": "Message Batches API/Overview",
+        "relevance_score": 0.5216,
+        "text_preview": "# Message Batches API  \n## Overview  \nThe Message Batches API allows you to send multiple message requests in a single batch, processing them asynchronously. This is ideal for high-volume workloads th..."
+      },
+      {
+        "chunk_id": "pricing.md::Claude API Pricing/Model Pricing/Claude Opus 4.7::chunk_0",
+        "source_file": "pricing.md",
+        "section": "Claude API Pricing/Model Pricing/Claude Opus 4.7",
+        "relevance_score": 0.4502,
+        "text_preview": "# Claude API Pricing  \n## Model Pricing  \n### Claude Opus 4.7\n| Feature | Price |\n|---------|-------|\n| Input tokens | $15 / MTok |\n| Output tokens | $75 / MTok |\n| Prompt caching write | $18.75 / MTo..."
+      },
+      {
+        "chunk_id": "pricing.md::Claude API Pricing/Cost Optimization Tips::chunk_0",
+        "source_file": "pricing.md",
+        "section": "Claude API Pricing/Cost Optimization Tips",
+        "relevance_score": 0.443,
+        "text_preview": "## Cost Optimization Tips  \n1. Use prompt caching for repeated prefixes\n2. Use batch API for non-real-time workloads (50% discount)\n3. Choose the right model for your task (Haiku for simple tasks)\n4. ..."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Overview::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Overview",
+        "relevance_score": 0.4381,
+        "text_preview": "# Prompt Caching  \n## Overview  \nPrompt caching allows you to cache frequently used context between API calls, reducing latency by up to 85% and costs by up to 90% for long prompts."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "What image formats does Claude support?",
+    "ground_truth_answer": "Claude supports JPEG, PNG, GIF, and WebP image formats.",
+    "ground_truth_context": "Supported Formats: JPEG, PNG, GIF, WebP",
+    "category": "factual",
+    "actual_answer": "Claude supports the following image formats:\n- JPEG\n- PNG\n- GIF\n- WebP\n\nThis information can be found in [vision.md::Vision/Supported Formats::chunk_0].",
+    "retrieved_contexts": [
+      "## Supported Formats  \nClaude supports the following image formats:\n- JPEG\n- PNG\n- GIF\n- WebP",
+      "# Multimodal Capabilities  \n## Overview  \nClaude supports multimodal inputs, allowing you to combine text with images and documents in your requests. This enables rich interactions that leverage both ...",
+      "# Vision  \n## Overview  \nClaude can analyze images passed in API requests. This enables use cases like document analysis, image description, visual question answering, and more.",
+      "## Image Understanding Capabilities  \nClaude can:\n- Describe image contents\n- Read text in images (OCR)\n- Analyze charts and graphs\n- Compare multiple images\n- Answer questions about visual content\n- ...",
+      "# Computer Use  \n## Overview  \nComputer use is a beta feature that allows Claude to interact with a computer desktop environment. Claude can view screenshots, move the mouse, click elements, type text..."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "vision.md::Vision/Supported Formats::chunk_0",
+        "source_file": "vision.md",
+        "section": "Vision/Supported Formats",
+        "relevance_score": 0.7111,
+        "text_preview": "## Supported Formats  \nClaude supports the following image formats:\n- JPEG\n- PNG\n- GIF\n- WebP"
+      },
+      {
+        "chunk_id": "multimodal.md::Multimodal Capabilities/Overview::chunk_0",
+        "source_file": "multimodal.md",
+        "section": "Multimodal Capabilities/Overview",
+        "relevance_score": 0.6093,
+        "text_preview": "# Multimodal Capabilities  \n## Overview  \nClaude supports multimodal inputs, allowing you to combine text with images and documents in your requests. This enables rich interactions that leverage both ..."
+      },
+      {
+        "chunk_id": "vision.md::Vision/Overview::chunk_0",
+        "source_file": "vision.md",
+        "section": "Vision/Overview",
+        "relevance_score": 0.5537,
+        "text_preview": "# Vision  \n## Overview  \nClaude can analyze images passed in API requests. This enables use cases like document analysis, image description, visual question answering, and more."
+      },
+      {
+        "chunk_id": "multimodal.md::Multimodal Capabilities/Image Understanding Capabilities::chunk_0",
+        "source_file": "multimodal.md",
+        "section": "Multimodal Capabilities/Image Understanding Capabilities",
+        "relevance_score": 0.5277,
+        "text_preview": "## Image Understanding Capabilities  \nClaude can:\n- Describe image contents\n- Read text in images (OCR)\n- Analyze charts and graphs\n- Compare multiple images\n- Answer questions about visual content\n- ..."
+      },
+      {
+        "chunk_id": "computer-use.md::Computer Use/Overview::chunk_0",
+        "source_file": "computer-use.md",
+        "section": "Computer Use/Overview",
+        "relevance_score": 0.4863,
+        "text_preview": "# Computer Use  \n## Overview  \nComputer use is a beta feature that allows Claude to interact with a computer desktop environment. Claude can view screenshots, move the mouse, click elements, type text..."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "What is the input token price for Claude Haiku 4.5?",
+    "ground_truth_answer": "Claude Haiku 4.5 costs $0.80 per million input tokens.",
+    "ground_truth_context": "Input tokens | $0.80 / MTok",
+    "category": "factual",
+    "actual_answer": "The input token price for Claude Haiku 4.5 is $0.80 per million tokens (MTok). This information can be found in two places: \n\n* In the Claude Haiku 4.5 pricing section [pricing.md::Claude API Pricing/Model Pricing/Claude Haiku 4.5::chunk_0], which lists the price as $0.80 / MTok.\n* In the Prompt Caching pricing section [prompt-caching.md::Prompt Caching/Pricing::chunk_0], which also lists the base input price for Claude Haiku 4.5 as $0.80/MTok.",
+    "retrieved_contexts": [
+      "### Claude Haiku 4.5\nClaude Haiku 4.5 is the fastest and most cost-effective model, ideal for lightweight tasks and high-volume applications.  \n- **Context window**: 200K tokens\n- **Max output**: 8,19...",
+      "### Claude Haiku 4.5\n| Feature | Price |\n|---------|-------|\n| Input tokens | $0.80 / MTok |\n| Output tokens | $4 / MTok |\n| Prompt caching write | $1 / MTok |\n| Prompt caching read | $0.08 / MTok |\n|...",
+      "# Claude API Pricing  \n## Model Pricing  \n### Claude Opus 4.7\n| Feature | Price |\n|---------|-------|\n| Input tokens | $15 / MTok |\n| Output tokens | $75 / MTok |\n| Prompt caching write | $18.75 / MTo...",
+      "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc...",
+      "## Pricing  \n| Model | Base Input | Cache Write | Cache Read |\n|-------|-----------|-------------|------------|\n| Claude Opus 4.7 | $15/MTok | $18.75/MTok | $1.50/MTok |\n| Claude Sonnet 4.6 | $3/MTok ..."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "models-overview.md::Claude Models Overview/Latest Models/Claude Haiku 4.5::chunk_0",
+        "source_file": "models-overview.md",
+        "section": "Claude Models Overview/Latest Models/Claude Haiku 4.5",
+        "relevance_score": 0.6253,
+        "text_preview": "### Claude Haiku 4.5\nClaude Haiku 4.5 is the fastest and most cost-effective model, ideal for lightweight tasks and high-volume applications.  \n- **Context window**: 200K tokens\n- **Max output**: 8,19..."
+      },
+      {
+        "chunk_id": "pricing.md::Claude API Pricing/Model Pricing/Claude Haiku 4.5::chunk_0",
+        "source_file": "pricing.md",
+        "section": "Claude API Pricing/Model Pricing/Claude Haiku 4.5",
+        "relevance_score": 0.5601,
+        "text_preview": "### Claude Haiku 4.5\n| Feature | Price |\n|---------|-------|\n| Input tokens | $0.80 / MTok |\n| Output tokens | $4 / MTok |\n| Prompt caching write | $1 / MTok |\n| Prompt caching read | $0.08 / MTok |\n|..."
+      },
+      {
+        "chunk_id": "pricing.md::Claude API Pricing/Model Pricing/Claude Opus 4.7::chunk_0",
+        "source_file": "pricing.md",
+        "section": "Claude API Pricing/Model Pricing/Claude Opus 4.7",
+        "relevance_score": 0.549,
+        "text_preview": "# Claude API Pricing  \n## Model Pricing  \n### Claude Opus 4.7\n| Feature | Price |\n|---------|-------|\n| Input tokens | $15 / MTok |\n| Output tokens | $75 / MTok |\n| Prompt caching write | $18.75 / MTo..."
+      },
+      {
+        "chunk_id": "extended-thinking.md::Extended Thinking/Budget Tokens::chunk_0",
+        "source_file": "extended-thinking.md",
+        "section": "Extended Thinking/Budget Tokens",
+        "relevance_score": 0.5078,
+        "text_preview": "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc..."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Pricing::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Pricing",
+        "relevance_score": 0.4631,
+        "text_preview": "## Pricing  \n| Model | Base Input | Cache Write | Cache Read |\n|-------|-----------|-------------|------------|\n| Claude Opus 4.7 | $15/MTok | $18.75/MTok | $1.50/MTok |\n| Claude Sonnet 4.6 | $3/MTok ..."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "What is the maximum number of images Claude can process per request?",
+    "ground_truth_answer": "Claude can process up to 20 images per request.",
+    "ground_truth_context": "Up to 20 images per request",
+    "category": "factual",
+    "actual_answer": "According to the provided context, Claude can process up to 20 images per request. This information is mentioned in two places: [vision.md::Vision/Maximum Image Size::chunk_0] and [multimodal.md::Multimodal Capabilities/Supported Input Types/Images::chunk_0]. Both chunks confirm that the maximum number of images per request is 20.",
+    "retrieved_contexts": [
+      "## Maximum Image Size  \n- Maximum file size: 20 MB per image\n- Maximum dimensions: 8192 x 8192 pixels\n- Up to 20 images per request",
+      "## Supported Input Types  \n### Images\n- Formats: JPEG, PNG, GIF, WebP\n- Max size: 20 MB per image\n- Max dimensions: 8192 x 8192 pixels\n- Up to 20 images per request",
+      "# Vision  \n## Overview  \nClaude can analyze images passed in API requests. This enables use cases like document analysis, image description, visual question answering, and more.",
+      "### PDFs\n- Max size: 32 MB per PDF\n- Max pages: 100 pages\n- Rendered as images internally",
+      "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc..."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "vision.md::Vision/Maximum Image Size::chunk_0",
+        "source_file": "vision.md",
+        "section": "Vision/Maximum Image Size",
+        "relevance_score": 0.6254,
+        "text_preview": "## Maximum Image Size  \n- Maximum file size: 20 MB per image\n- Maximum dimensions: 8192 x 8192 pixels\n- Up to 20 images per request"
+      },
+      {
+        "chunk_id": "multimodal.md::Multimodal Capabilities/Supported Input Types/Images::chunk_0",
+        "source_file": "multimodal.md",
+        "section": "Multimodal Capabilities/Supported Input Types/Images",
+        "relevance_score": 0.5314,
+        "text_preview": "## Supported Input Types  \n### Images\n- Formats: JPEG, PNG, GIF, WebP\n- Max size: 20 MB per image\n- Max dimensions: 8192 x 8192 pixels\n- Up to 20 images per request"
+      },
+      {
+        "chunk_id": "vision.md::Vision/Overview::chunk_0",
+        "source_file": "vision.md",
+        "section": "Vision/Overview",
+        "relevance_score": 0.5008,
+        "text_preview": "# Vision  \n## Overview  \nClaude can analyze images passed in API requests. This enables use cases like document analysis, image description, visual question answering, and more."
+      },
+      {
+        "chunk_id": "multimodal.md::Multimodal Capabilities/Supported Input Types/PDFs::chunk_0",
+        "source_file": "multimodal.md",
+        "section": "Multimodal Capabilities/Supported Input Types/PDFs",
+        "relevance_score": 0.4646,
+        "text_preview": "### PDFs\n- Max size: 32 MB per PDF\n- Max pages: 100 pages\n- Rendered as images internally"
+      },
+      {
+        "chunk_id": "extended-thinking.md::Extended Thinking/Budget Tokens::chunk_0",
+        "source_file": "extended-thinking.md",
+        "section": "Extended Thinking/Budget Tokens",
+        "relevance_score": 0.438,
+        "text_preview": "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc..."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "Which Claude models support extended thinking, and what is the maximum budget for thinking tokens?",
+    "ground_truth_answer": "Extended thinking is available on Claude Opus 4.7 and Claude Sonnet 4.6. The maximum budget for thinking tokens is 128,000 tokens.",
+    "ground_truth_context": "Only available on Claude Opus 4.7 and Claude Sonnet 4.6. Maximum: 128,000 tokens.",
+    "category": "multi-hop",
+    "actual_answer": "According to the provided context, Claude Opus 4.7 supports extended thinking, with a maximum output of 32,768 tokens and up to 128K tokens with extended thinking [models-overview.md::Claude Models Overview/Latest Models/Claude Opus 4.7::chunk_0].\n\nThe maximum budget for thinking tokens is 128,000 tokens, as specified by the `budget_tokens` parameter [extended-thinking.md::Extended Thinking/Budget Tokens::chunk_0].\n\nHowever, the provided context does not explicitly state that Claude Opus 4.7 is the only model that supports extended thinking. It only provides information about Claude Opus 4.7.\n\nTherefore, based on the provided context, we can conclude that Claude Opus 4.7 supports extended thinking with a maximum budget of 128,000 tokens [extended-thinking.md::Extended Thinking/Budget Tokens::chunk_0][models-overview.md::Claude Models Overview/Latest Models/Claude Opus 4.7::chunk_0]. \n\nBut we cannot confirm if other models support extended thinking or not [I don't have enough information in the provided documents to answer this question about other models].",
+    "retrieved_contexts": [
+      "# Extended Thinking  \n## Overview  \nExtended thinking allows Claude to think through complex problems step-by-step before providing a response. This significantly improves performance on tasks requiri...",
+      "## How It Works  \nWhen extended thinking is enabled, Claude generates internal \"thinking\" tokens that are used to reason through the problem. These thinking tokens are visible in the response but are ...",
+      "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc...",
+      "# Claude Models Overview  \n## Latest Models  \n### Claude Opus 4.7\nClaude Opus 4.7 is Anthropic's most capable model, offering the highest level of intelligence and performance. It excels at complex re...",
+      "## When to Use Extended Thinking  \n- Complex mathematical proofs\n- Multi-step reasoning problems\n- Code debugging and analysis\n- Strategic planning\n- Scientific analysis"
+    ],
+    "source_details": [
+      {
+        "chunk_id": "extended-thinking.md::Extended Thinking/Overview::chunk_0",
+        "source_file": "extended-thinking.md",
+        "section": "Extended Thinking/Overview",
+        "relevance_score": 0.6887,
+        "text_preview": "# Extended Thinking  \n## Overview  \nExtended thinking allows Claude to think through complex problems step-by-step before providing a response. This significantly improves performance on tasks requiri..."
+      },
+      {
+        "chunk_id": "extended-thinking.md::Extended Thinking/How It Works::chunk_0",
+        "source_file": "extended-thinking.md",
+        "section": "Extended Thinking/How It Works",
+        "relevance_score": 0.6826,
+        "text_preview": "## How It Works  \nWhen extended thinking is enabled, Claude generates internal \"thinking\" tokens that are used to reason through the problem. These thinking tokens are visible in the response but are ..."
+      },
+      {
+        "chunk_id": "extended-thinking.md::Extended Thinking/Budget Tokens::chunk_0",
+        "source_file": "extended-thinking.md",
+        "section": "Extended Thinking/Budget Tokens",
+        "relevance_score": 0.585,
+        "text_preview": "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc..."
+      },
+      {
+        "chunk_id": "models-overview.md::Claude Models Overview/Latest Models/Claude Opus 4.7::chunk_0",
+        "source_file": "models-overview.md",
+        "section": "Claude Models Overview/Latest Models/Claude Opus 4.7",
+        "relevance_score": 0.5807,
+        "text_preview": "# Claude Models Overview  \n## Latest Models  \n### Claude Opus 4.7\nClaude Opus 4.7 is Anthropic's most capable model, offering the highest level of intelligence and performance. It excels at complex re..."
+      },
+      {
+        "chunk_id": "extended-thinking.md::Extended Thinking/When to Use Extended Thinking::chunk_0",
+        "source_file": "extended-thinking.md",
+        "section": "Extended Thinking/When to Use Extended Thinking",
+        "relevance_score": 0.495,
+        "text_preview": "## When to Use Extended Thinking  \n- Complex mathematical proofs\n- Multi-step reasoning problems\n- Code debugging and analysis\n- Strategic planning\n- Scientific analysis"
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "If I want to use the cheapest model with prompt caching, what is the cache read price and what is the minimum cacheable length?",
+    "ground_truth_answer": "The cheapest model is Claude Haiku 4.5 with a cache read price of $0.08/MTok and a minimum cacheable length of 2,048 tokens.",
+    "ground_truth_context": "Claude Haiku 4.5: Prompt caching read $0.08/MTok. Claude Haiku: 2,048 tokens minimum cacheable.",
+    "category": "multi-hop",
+    "actual_answer": "I don't have enough information in the provided documents to answer this question. \n\nThe provided context discusses prompt caching, its benefits, cache lifetime, and minimum cacheable lengths for different models [prompt-caching.md::Prompt Caching/Overview::chunk_0], [prompt-caching.md::Prompt Caching/Cache Lifetime::chunk_0], [prompt-caching.md::Prompt Caching/Minimum Cacheable Length::chunk_0]. However, it does not provide pricing information for cache reads or specify which model is the cheapest with prompt caching [fine-tuning.md::Fine-Tuning/Alternatives to Fine-Tuning/Prompt Caching::chunk_0]. \n\nTo answer your question accurately, I would need additional information about the pricing for cache reads and the relative costs of the different models.",
+    "retrieved_contexts": [
+      "# Prompt Caching  \n## Overview  \nPrompt caching allows you to cache frequently used context between API calls, reducing latency by up to 85% and costs by up to 90% for long prompts.",
+      "## Cache Lifetime  \nCached prompts have a minimum lifetime of 5 minutes. Each time a cached prompt is used, the lifetime is extended by 5 minutes. The cache is ephemeral and not guaranteed to persist.",
+      "### Prompt Caching  \nUse prompt caching to make few-shot examples and large system prompts cost-effective. Cached tokens are charged at a reduced rate, making it economical to include detailed instruc...",
+      "## Minimum Cacheable Length  \nThe minimum cacheable prompt prefix length varies by model:\n- **Claude Opus**: 1,024 tokens\n- **Claude Sonnet**: 1,024 tokens\n- **Claude Haiku**: 2,048 tokens",
+      "## How It Works  \nWhen you send a request with prompt caching enabled, Anthropic's infrastructure:\n1. Checks if a prefix of your prompt is already cached\n2. If cached, uses the cached version (cache h..."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Overview::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Overview",
+        "relevance_score": 0.5756,
+        "text_preview": "# Prompt Caching  \n## Overview  \nPrompt caching allows you to cache frequently used context between API calls, reducing latency by up to 85% and costs by up to 90% for long prompts."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Cache Lifetime::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Cache Lifetime",
+        "relevance_score": 0.5537,
+        "text_preview": "## Cache Lifetime  \nCached prompts have a minimum lifetime of 5 minutes. Each time a cached prompt is used, the lifetime is extended by 5 minutes. The cache is ephemeral and not guaranteed to persist."
+      },
+      {
+        "chunk_id": "fine-tuning.md::Fine-Tuning/Alternatives to Fine-Tuning/Prompt Caching::chunk_0",
+        "source_file": "fine-tuning.md",
+        "section": "Fine-Tuning/Alternatives to Fine-Tuning/Prompt Caching",
+        "relevance_score": 0.5477,
+        "text_preview": "### Prompt Caching  \nUse prompt caching to make few-shot examples and large system prompts cost-effective. Cached tokens are charged at a reduced rate, making it economical to include detailed instruc..."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Minimum Cacheable Length::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Minimum Cacheable Length",
+        "relevance_score": 0.4788,
+        "text_preview": "## Minimum Cacheable Length  \nThe minimum cacheable prompt prefix length varies by model:\n- **Claude Opus**: 1,024 tokens\n- **Claude Sonnet**: 1,024 tokens\n- **Claude Haiku**: 2,048 tokens"
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/How It Works::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/How It Works",
+        "relevance_score": 0.4765,
+        "text_preview": "## How It Works  \nWhen you send a request with prompt caching enabled, Anthropic's infrastructure:\n1. Checks if a prefix of your prompt is already cached\n2. If cached, uses the cached version (cache h..."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "Which model has the largest maximum output and what is its batch API output price?",
+    "ground_truth_answer": "Claude Opus 4.7 has the largest maximum output at 32,768 tokens (up to 128K with extended thinking), and its batch API output price is $37.50/MTok.",
+    "ground_truth_context": "Claude Opus 4.7: Max output 32,768 tokens. Batch output $37.50/MTok.",
+    "category": "multi-hop",
+    "actual_answer": "To determine which model has the largest maximum output and its batch API output price, we need to examine the provided context.\n\nFirst, let's look at the context window sizes and maximum output for each model [context-window.md::chunk_0]:\n| Model | Context Window | Max Output |\n|-------|---------------|------------|\n| Claude Opus 4.7 | 200K tokens (1M with extended) | 32,768 tokens |\n| Claude Sonnet 4.6 | 200K tokens | 16,384 tokens |\n| Claude Haiku 4.5 | 200K tokens | 8,192 tokens |\n\nFrom this information, we can see that Claude Opus 4.7 has the largest maximum output of 32,768 tokens.\n\nNext, let's find the batch API output price for Claude Opus 4.7. The batch API pricing for Claude Opus 4.7 is [pricing.md::chunk_0]:\n| Feature | Price |\n|---------|-------|\n| ... | ... \n| Batch output | $37.50 / MTok |\n\nTherefore, the model with the largest maximum output is Claude Opus 4.7, and its batch API output price is $37.50 per million tokens.\n\nReferences: \n- [context-window.md::chunk_0] for context window sizes and maximum output.\n- [pricing.md::chunk_0] for batch API output pricing.",
+    "retrieved_contexts": [
+      "# Claude API Pricing  \n## Model Pricing  \n### Claude Opus 4.7\n| Feature | Price |\n|---------|-------|\n| Input tokens | $15 / MTok |\n| Output tokens | $75 / MTok |\n| Prompt caching write | $18.75 / MTo...",
+      "### Claude Sonnet 4.6\n| Feature | Price |\n|---------|-------|\n| Input tokens | $3 / MTok |\n| Output tokens | $15 / MTok |\n| Prompt caching write | $3.75 / MTok |\n| Prompt caching read | $0.30 / MTok |...",
+      "## Benefits  \n- **50% cost reduction** compared to standard API calls\n- Process up to 100,000 requests per batch\n- Results available within 24 hours (usually much faster)\n- No rate limit impact on you...",
+      "# Context Window and Token Limits  \n## Context Window Sizes  \n| Model | Context Window | Max Output |\n|-------|---------------|------------|\n| Claude Opus 4.7 | 200K tokens (1M with extended) | 32,768...",
+      "## Pricing  \n| Model | Base Input | Cache Write | Cache Read |\n|-------|-----------|-------------|------------|\n| Claude Opus 4.7 | $15/MTok | $18.75/MTok | $1.50/MTok |\n| Claude Sonnet 4.6 | $3/MTok ..."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "pricing.md::Claude API Pricing/Model Pricing/Claude Opus 4.7::chunk_0",
+        "source_file": "pricing.md",
+        "section": "Claude API Pricing/Model Pricing/Claude Opus 4.7",
+        "relevance_score": 0.4941,
+        "text_preview": "# Claude API Pricing  \n## Model Pricing  \n### Claude Opus 4.7\n| Feature | Price |\n|---------|-------|\n| Input tokens | $15 / MTok |\n| Output tokens | $75 / MTok |\n| Prompt caching write | $18.75 / MTo..."
+      },
+      {
+        "chunk_id": "pricing.md::Claude API Pricing/Model Pricing/Claude Sonnet 4.6::chunk_0",
+        "source_file": "pricing.md",
+        "section": "Claude API Pricing/Model Pricing/Claude Sonnet 4.6",
+        "relevance_score": 0.4444,
+        "text_preview": "### Claude Sonnet 4.6\n| Feature | Price |\n|---------|-------|\n| Input tokens | $3 / MTok |\n| Output tokens | $15 / MTok |\n| Prompt caching write | $3.75 / MTok |\n| Prompt caching read | $0.30 / MTok |..."
+      },
+      {
+        "chunk_id": "batch-api.md::Message Batches API/Benefits::chunk_0",
+        "source_file": "batch-api.md",
+        "section": "Message Batches API/Benefits",
+        "relevance_score": 0.4436,
+        "text_preview": "## Benefits  \n- **50% cost reduction** compared to standard API calls\n- Process up to 100,000 requests per batch\n- Results available within 24 hours (usually much faster)\n- No rate limit impact on you..."
+      },
+      {
+        "chunk_id": "context-window.md::Context Window and Token Limits/Context Window Sizes::chunk_0",
+        "source_file": "context-window.md",
+        "section": "Context Window and Token Limits/Context Window Sizes",
+        "relevance_score": 0.4333,
+        "text_preview": "# Context Window and Token Limits  \n## Context Window Sizes  \n| Model | Context Window | Max Output |\n|-------|---------------|------------|\n| Claude Opus 4.7 | 200K tokens (1M with extended) | 32,768..."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Pricing::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Pricing",
+        "relevance_score": 0.4234,
+        "text_preview": "## Pricing  \n| Model | Base Input | Cache Write | Cache Read |\n|-------|-----------|-------------|------------|\n| Claude Opus 4.7 | $15/MTok | $18.75/MTok | $1.50/MTok |\n| Claude Sonnet 4.6 | $3/MTok ..."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "For a RAG system using Claude, what embedding model dimensions and chunk size are recommended?",
+    "ground_truth_answer": "Recommended embedding models include all-MiniLM-L6-v2 (384 dimensions) and nomic-embed-text (768 dimensions). Recommended chunk size is 256-1024 tokens with 10-20% overlap.",
+    "ground_truth_context": "all-MiniLM-L6-v2: 384 dimensions. nomic-embed-text: 768 dimensions. Chunk Size: Use 256-1024 tokens.",
+    "category": "multi-hop",
+    "actual_answer": "I don't have enough information in the provided documents to answer this question. \n\nThe provided context discusses best practices for RAG systems using Claude, including chunk size recommendations [embeddings.md::Embeddings/Best Practices for RAG with Claude::chunk_0] and retrieval strategies [rag-best-practices.md::Retrieval-Augmented Generation (RAG)/Best Practices::chunk_0], but it does not specify recommended embedding model dimensions. \n\nIt only mentions that the chunk size should be between 256-1024 tokens per chunk [embeddings.md::Embeddings/Best Practices for RAG with Claude::chunk_0].",
+    "retrieved_contexts": [
+      "## Recommended Embedding Models  \nFor use with Claude-based RAG systems:",
+      "## Best Practices for RAG with Claude  \n1. **Chunk Size**: Use 256-1024 tokens per chunk depending on content type\n2. **Overlap**: 10-20% overlap between chunks preserves context\n3. **Metadata**: Stor...",
+      "# Embeddings  \n## Overview  \nWhile Anthropic does not provide a dedicated embeddings API, Claude can be used in conjunction with embedding models for RAG (Retrieval-Augmented Generation) and semantic ...",
+      "## Best Practices  \n- Retrieve 3-10 relevant chunks to balance context richness and noise.\n- Instruct Claude to cite which documents it used in its answer.\n- Use `claude-sonnet-4-6` for a good balance...",
+      "# Retrieval-Augmented Generation (RAG)  \n## Overview  \nRAG combines information retrieval with Claude's generation capabilities. By injecting relevant documents into the prompt, you ground Claude's re..."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "embeddings.md::Embeddings/Recommended Embedding Models::chunk_0",
+        "source_file": "embeddings.md",
+        "section": "Embeddings/Recommended Embedding Models",
+        "relevance_score": 0.7962,
+        "text_preview": "## Recommended Embedding Models  \nFor use with Claude-based RAG systems:"
+      },
+      {
+        "chunk_id": "embeddings.md::Embeddings/Best Practices for RAG with Claude::chunk_0",
+        "source_file": "embeddings.md",
+        "section": "Embeddings/Best Practices for RAG with Claude",
+        "relevance_score": 0.4955,
+        "text_preview": "## Best Practices for RAG with Claude  \n1. **Chunk Size**: Use 256-1024 tokens per chunk depending on content type\n2. **Overlap**: 10-20% overlap between chunks preserves context\n3. **Metadata**: Stor..."
+      },
+      {
+        "chunk_id": "embeddings.md::Embeddings/Overview::chunk_0",
+        "source_file": "embeddings.md",
+        "section": "Embeddings/Overview",
+        "relevance_score": 0.4945,
+        "text_preview": "# Embeddings  \n## Overview  \nWhile Anthropic does not provide a dedicated embeddings API, Claude can be used in conjunction with embedding models for RAG (Retrieval-Augmented Generation) and semantic ..."
+      },
+      {
+        "chunk_id": "rag-best-practices.md::Retrieval-Augmented Generation (RAG)/Best Practices::chunk_0",
+        "source_file": "rag-best-practices.md",
+        "section": "Retrieval-Augmented Generation (RAG)/Best Practices",
+        "relevance_score": 0.4512,
+        "text_preview": "## Best Practices  \n- Retrieve 3-10 relevant chunks to balance context richness and noise.\n- Instruct Claude to cite which documents it used in its answer.\n- Use `claude-sonnet-4-6` for a good balance..."
+      },
+      {
+        "chunk_id": "rag-best-practices.md::Retrieval-Augmented Generation (RAG)/Overview::chunk_0",
+        "source_file": "rag-best-practices.md",
+        "section": "Retrieval-Augmented Generation (RAG)/Overview",
+        "relevance_score": 0.4284,
+        "text_preview": "# Retrieval-Augmented Generation (RAG)  \n## Overview  \nRAG combines information retrieval with Claude's generation capabilities. By injecting relevant documents into the prompt, you ground Claude's re..."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "How can I use prompt caching with the batch API to minimize costs for Claude Sonnet?",
+    "ground_truth_answer": "For Claude Sonnet 4.6, use prompt caching with cache_control breakpoints (cache read at $0.30/MTok) combined with the batch API (batch input at $1.50/MTok, batch output at $7.50/MTok) for maximum savings. The minimum cacheable length is 1,024 tokens.",
+    "ground_truth_context": "Claude Sonnet 4.6: Prompt caching read $0.30/MTok. Batch input $1.50/MTok. Minimum cacheable: 1,024 tokens.",
+    "category": "multi-hop",
+    "actual_answer": "To use prompt caching with the batch API and minimize costs for Claude Sonnet, follow these steps:\n\n1. **Enable prompt caching**: Use prompt caching for repeated prefixes to reduce costs. This allows you to cache frequently used context between API calls, reducing latency and costs [prompt-caching.md::chunk_0].\n2. **Understand the pricing**: Review the pricing for Claude Sonnet 4.6, which includes prompt caching write ($3.75 / MTok) and read ($0.30 / MTok) costs [pricing.md::chunk_0].\n3. **Use batch API**: Utilize the batch API for non-real-time workloads, which offers a 50% discount. This can help minimize costs when used in conjunction with prompt caching [pricing.md::chunk_0].\n4. **Optimize prompts**: Optimize prompt length, as shorter prompts cost less. Also, set appropriate `max_tokens` to avoid unnecessary output [pricing.md::chunk_0].\n\nWhen using prompt caching with the batch API:\n- Anthropic's infrastructure checks if a prefix of your prompt is already cached.\n- If cached, it uses the cached version (cache hit), which is faster and cheaper.\n- If not cached, it processes the full prompt and caches the prefix for future use [prompt-caching.md::chunk_0].\n\nBy combining prompt caching and batch API, you can reduce costs by up to 90% for long prompts and take advantage of the 50% discount for batch API usage [prompt-caching.md::chunk_0]. \n\nRelevant chunks: [prompt-caching.md::chunk_0], [pricing.md::chunk_0], [prompt-caching.md::chunk_0].",
+    "retrieved_contexts": [
+      "### Prompt Caching  \nUse prompt caching to make few-shot examples and large system prompts cost-effective. Cached tokens are charged at a reduced rate, making it economical to include detailed instruc...",
+      "# Prompt Caching  \n## Overview  \nPrompt caching allows you to cache frequently used context between API calls, reducing latency by up to 85% and costs by up to 90% for long prompts.",
+      "### Claude Sonnet 4.6\n| Feature | Price |\n|---------|-------|\n| Input tokens | $3 / MTok |\n| Output tokens | $15 / MTok |\n| Prompt caching write | $3.75 / MTok |\n| Prompt caching read | $0.30 / MTok |...",
+      "## Cost Optimization Tips  \n1. Use prompt caching for repeated prefixes\n2. Use batch API for non-real-time workloads (50% discount)\n3. Choose the right model for your task (Haiku for simple tasks)\n4. ...",
+      "## How It Works  \nWhen you send a request with prompt caching enabled, Anthropic's infrastructure:\n1. Checks if a prefix of your prompt is already cached\n2. If cached, uses the cached version (cache h..."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "fine-tuning.md::Fine-Tuning/Alternatives to Fine-Tuning/Prompt Caching::chunk_0",
+        "source_file": "fine-tuning.md",
+        "section": "Fine-Tuning/Alternatives to Fine-Tuning/Prompt Caching",
+        "relevance_score": 0.635,
+        "text_preview": "### Prompt Caching  \nUse prompt caching to make few-shot examples and large system prompts cost-effective. Cached tokens are charged at a reduced rate, making it economical to include detailed instruc..."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Overview::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Overview",
+        "relevance_score": 0.6203,
+        "text_preview": "# Prompt Caching  \n## Overview  \nPrompt caching allows you to cache frequently used context between API calls, reducing latency by up to 85% and costs by up to 90% for long prompts."
+      },
+      {
+        "chunk_id": "pricing.md::Claude API Pricing/Model Pricing/Claude Sonnet 4.6::chunk_0",
+        "source_file": "pricing.md",
+        "section": "Claude API Pricing/Model Pricing/Claude Sonnet 4.6",
+        "relevance_score": 0.5924,
+        "text_preview": "### Claude Sonnet 4.6\n| Feature | Price |\n|---------|-------|\n| Input tokens | $3 / MTok |\n| Output tokens | $15 / MTok |\n| Prompt caching write | $3.75 / MTok |\n| Prompt caching read | $0.30 / MTok |..."
+      },
+      {
+        "chunk_id": "pricing.md::Claude API Pricing/Cost Optimization Tips::chunk_0",
+        "source_file": "pricing.md",
+        "section": "Claude API Pricing/Cost Optimization Tips",
+        "relevance_score": 0.5739,
+        "text_preview": "## Cost Optimization Tips  \n1. Use prompt caching for repeated prefixes\n2. Use batch API for non-real-time workloads (50% discount)\n3. Choose the right model for your task (Haiku for simple tasks)\n4. ..."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/How It Works::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/How It Works",
+        "relevance_score": 0.5264,
+        "text_preview": "## How It Works  \nWhen you send a request with prompt caching enabled, Anthropic's infrastructure:\n1. Checks if a prefix of your prompt is already cached\n2. If cached, uses the cached version (cache h..."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "What is Anthropic's annual revenue for 2025?",
+    "ground_truth_answer": "This information is not available in the documentation.",
+    "ground_truth_context": "",
+    "category": "no-answer",
+    "actual_answer": "I don't have enough information in the provided documents to answer this question. \n\nThe provided context does not mention Anthropic's annual revenue for 2025 or any year. It discusses enterprise features, data privacy and security, getting started with enterprise features, rate limits, and Anthropic SDKs, but does not include financial information [enterprise-features.md::Enterprise Features/Getting Started::chunk_0, enterprise-features.md::Enterprise Features/Data Privacy and Security::chunk_0, rate-limits.md::Rate Limits/Overview::chunk_0, enterprise-features.md::Enterprise Features/Overview::chunk_0, anthropic-sdks.md::Anthropic SDKs/Python SDK/Installation::chunk_0].",
+    "retrieved_contexts": [
+      "## Getting Started  \nTo explore enterprise features, contact Anthropic sales at sales@anthropic.com or visit the Anthropic Console to learn more about available plans.",
+      "## Data Privacy and Security  \n- **Data retention**: Anthropic does not use API inputs or outputs to train models. Enterprise customers can configure custom data retention periods.\n- **Encryption**: A...",
+      "# Rate Limits  \n## Overview  \nAnthropic enforces rate limits to ensure fair usage and API stability. Limits are applied per organization and vary by usage tier and model.",
+      "# Enterprise Features  \n## Overview  \nAnthropic offers enterprise-grade features for organizations that require advanced security, compliance, and administrative controls when using Claude. These feat...",
+      "# Anthropic SDKs  \n## Python SDK  \n### Installation  \n```bash\npip install anthropic\n```"
+    ],
+    "source_details": [
+      {
+        "chunk_id": "enterprise-features.md::Enterprise Features/Getting Started::chunk_0",
+        "source_file": "enterprise-features.md",
+        "section": "Enterprise Features/Getting Started",
+        "relevance_score": 0.4149,
+        "text_preview": "## Getting Started  \nTo explore enterprise features, contact Anthropic sales at sales@anthropic.com or visit the Anthropic Console to learn more about available plans."
+      },
+      {
+        "chunk_id": "enterprise-features.md::Enterprise Features/Data Privacy and Security::chunk_0",
+        "source_file": "enterprise-features.md",
+        "section": "Enterprise Features/Data Privacy and Security",
+        "relevance_score": 0.3412,
+        "text_preview": "## Data Privacy and Security  \n- **Data retention**: Anthropic does not use API inputs or outputs to train models. Enterprise customers can configure custom data retention periods.\n- **Encryption**: A..."
+      },
+      {
+        "chunk_id": "rate-limits.md::Rate Limits/Overview::chunk_0",
+        "source_file": "rate-limits.md",
+        "section": "Rate Limits/Overview",
+        "relevance_score": 0.3228,
+        "text_preview": "# Rate Limits  \n## Overview  \nAnthropic enforces rate limits to ensure fair usage and API stability. Limits are applied per organization and vary by usage tier and model."
+      },
+      {
+        "chunk_id": "enterprise-features.md::Enterprise Features/Overview::chunk_0",
+        "source_file": "enterprise-features.md",
+        "section": "Enterprise Features/Overview",
+        "relevance_score": 0.3218,
+        "text_preview": "# Enterprise Features  \n## Overview  \nAnthropic offers enterprise-grade features for organizations that require advanced security, compliance, and administrative controls when using Claude. These feat..."
+      },
+      {
+        "chunk_id": "anthropic-sdks.md::Anthropic SDKs/Python SDK/Installation::chunk_0",
+        "source_file": "anthropic-sdks.md",
+        "section": "Anthropic SDKs/Python SDK/Installation",
+        "relevance_score": 0.3112,
+        "text_preview": "# Anthropic SDKs  \n## Python SDK  \n### Installation  \n```bash\npip install anthropic\n```"
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "How does Claude's RLHF training process work internally?",
+    "ground_truth_answer": "This information is not available in the documentation. The docs do not describe Claude's internal training process.",
+    "ground_truth_context": "",
+    "category": "no-answer",
+    "actual_answer": "I don't have enough information in the provided documents to answer this question. \n\nThe provided context does not mention Claude's RLHF training process. It discusses fine-tuning [fine-tuning.md::Fine-Tuning/Current Status::chunk_0], an overview of Claude models [models-overview.md::Claude Models Overview/Latest Models/Claude Opus 4.7::chunk_0], Claude Code [claude-code.md::Claude Code/CLAUDE.md::chunk_0] [claude-code.md::Claude Code/Overview::chunk_0], and streaming [streaming.md::Streaming/Overview::chunk_0]. However, it does not provide details about the internal workings of Claude's RLHF training process.",
+    "retrieved_contexts": [
+      "# Fine-Tuning  \n## Current Status  \nAnthropic does not currently offer fine-tuning for Claude models. Unlike some other providers, you cannot train Claude on custom datasets to modify its weights.",
+      "# Claude Models Overview  \n## Latest Models  \n### Claude Opus 4.7\nClaude Opus 4.7 is Anthropic's most capable model, offering the highest level of intelligence and performance. It excels at complex re...",
+      "## CLAUDE.md  \nCLAUDE.md is a special file that Claude Code reads for project-specific context. Place it in your project root to provide:\n- Project overview and architecture\n- Coding conventions\n- Bui...",
+      "# Claude Code  \n## Overview  \nClaude Code is Anthropic's official agentic coding tool that operates directly in your terminal. It understands your codebase, can edit files, run commands, and help with...",
+      "# Streaming  \n## Overview  \nStreaming allows you to receive Claude's response in real-time as it's being generated, rather than waiting for the complete response. This provides a better user experienc..."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "fine-tuning.md::Fine-Tuning/Current Status::chunk_0",
+        "source_file": "fine-tuning.md",
+        "section": "Fine-Tuning/Current Status",
+        "relevance_score": 0.4292,
+        "text_preview": "# Fine-Tuning  \n## Current Status  \nAnthropic does not currently offer fine-tuning for Claude models. Unlike some other providers, you cannot train Claude on custom datasets to modify its weights."
+      },
+      {
+        "chunk_id": "models-overview.md::Claude Models Overview/Latest Models/Claude Opus 4.7::chunk_0",
+        "source_file": "models-overview.md",
+        "section": "Claude Models Overview/Latest Models/Claude Opus 4.7",
+        "relevance_score": 0.3933,
+        "text_preview": "# Claude Models Overview  \n## Latest Models  \n### Claude Opus 4.7\nClaude Opus 4.7 is Anthropic's most capable model, offering the highest level of intelligence and performance. It excels at complex re..."
+      },
+      {
+        "chunk_id": "claude-code.md::Claude Code/CLAUDE.md::chunk_0",
+        "source_file": "claude-code.md",
+        "section": "Claude Code/CLAUDE.md",
+        "relevance_score": 0.3561,
+        "text_preview": "## CLAUDE.md  \nCLAUDE.md is a special file that Claude Code reads for project-specific context. Place it in your project root to provide:\n- Project overview and architecture\n- Coding conventions\n- Bui..."
+      },
+      {
+        "chunk_id": "claude-code.md::Claude Code/Overview::chunk_0",
+        "source_file": "claude-code.md",
+        "section": "Claude Code/Overview",
+        "relevance_score": 0.3557,
+        "text_preview": "# Claude Code  \n## Overview  \nClaude Code is Anthropic's official agentic coding tool that operates directly in your terminal. It understands your codebase, can edit files, run commands, and help with..."
+      },
+      {
+        "chunk_id": "streaming.md::Streaming/Overview::chunk_0",
+        "source_file": "streaming.md",
+        "section": "Streaming/Overview",
+        "relevance_score": 0.3462,
+        "text_preview": "# Streaming  \n## Overview  \nStreaming allows you to receive Claude's response in real-time as it's being generated, rather than waiting for the complete response. This provides a better user experienc..."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "What is the exact number of parameters in Claude Opus 4.7?",
+    "ground_truth_answer": "This information is not available in the documentation. Anthropic does not publicly disclose model parameter counts.",
+    "ground_truth_context": "",
+    "category": "no-answer",
+    "actual_answer": "I don't have enough information in the provided documents to answer this question. \n\nThe provided context includes information about Claude Opus 4.7, such as its context window, maximum output, training data cutoff, and model ID [models-overview.md]. However, it does not mention the exact number of parameters in Claude Opus 4.7.",
+    "retrieved_contexts": [
+      "# Claude Models Overview  \n## Latest Models  \n### Claude Opus 4.7\nClaude Opus 4.7 is Anthropic's most capable model, offering the highest level of intelligence and performance. It excels at complex re...",
+      "## Minimum Cacheable Length  \nThe minimum cacheable prompt prefix length varies by model:\n- **Claude Opus**: 1,024 tokens\n- **Claude Sonnet**: 1,024 tokens\n- **Claude Haiku**: 2,048 tokens",
+      "## Per-Model Limits  \nHigher-capability models have separate, often lower limits:  \n- **claude-opus-4-7**: Lower RPM due to higher compute cost. Build tier gets 20 RPM.\n- **claude-sonnet-4-6**: Standa...",
+      "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc...",
+      "# Fine-Tuning  \n## Current Status  \nAnthropic does not currently offer fine-tuning for Claude models. Unlike some other providers, you cannot train Claude on custom datasets to modify its weights."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "models-overview.md::Claude Models Overview/Latest Models/Claude Opus 4.7::chunk_0",
+        "source_file": "models-overview.md",
+        "section": "Claude Models Overview/Latest Models/Claude Opus 4.7",
+        "relevance_score": 0.5446,
+        "text_preview": "# Claude Models Overview  \n## Latest Models  \n### Claude Opus 4.7\nClaude Opus 4.7 is Anthropic's most capable model, offering the highest level of intelligence and performance. It excels at complex re..."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Minimum Cacheable Length::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Minimum Cacheable Length",
+        "relevance_score": 0.5224,
+        "text_preview": "## Minimum Cacheable Length  \nThe minimum cacheable prompt prefix length varies by model:\n- **Claude Opus**: 1,024 tokens\n- **Claude Sonnet**: 1,024 tokens\n- **Claude Haiku**: 2,048 tokens"
+      },
+      {
+        "chunk_id": "rate-limits.md::Rate Limits/Per-Model Limits::chunk_0",
+        "source_file": "rate-limits.md",
+        "section": "Rate Limits/Per-Model Limits",
+        "relevance_score": 0.4837,
+        "text_preview": "## Per-Model Limits  \nHigher-capability models have separate, often lower limits:  \n- **claude-opus-4-7**: Lower RPM due to higher compute cost. Build tier gets 20 RPM.\n- **claude-sonnet-4-6**: Standa..."
+      },
+      {
+        "chunk_id": "extended-thinking.md::Extended Thinking/Budget Tokens::chunk_0",
+        "source_file": "extended-thinking.md",
+        "section": "Extended Thinking/Budget Tokens",
+        "relevance_score": 0.4474,
+        "text_preview": "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc..."
+      },
+      {
+        "chunk_id": "fine-tuning.md::Fine-Tuning/Current Status::chunk_0",
+        "source_file": "fine-tuning.md",
+        "section": "Fine-Tuning/Current Status",
+        "relevance_score": 0.4086,
+        "text_preview": "# Fine-Tuning  \n## Current Status  \nAnthropic does not currently offer fine-tuning for Claude models. Unlike some other providers, you cannot train Claude on custom datasets to modify its weights."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "Can Claude generate images or create visual content?",
+    "ground_truth_answer": "The documentation does not mention Claude having image generation capabilities. Claude can analyze images but there is no documentation about generating them.",
+    "ground_truth_context": "",
+    "category": "no-answer",
+    "actual_answer": "I don't have enough information in the provided documents to answer this question.\n\nThe provided context discusses Claude's ability to analyze and understand visual content, such as describing image contents [multimodal.md::Multimodal Capabilities/Image Understanding Capabilities::chunk_0], reading text in images [multimodal.md::Multimodal Capabilities/Image Understanding Capabilities::chunk_0], and interacting with a computer desktop environment [computer-use.md::Computer Use/Overview::chunk_0]. However, it does not mention Claude's ability to generate images or create visual content.",
+    "retrieved_contexts": [
+      "# Multimodal Capabilities  \n## Overview  \nClaude supports multimodal inputs, allowing you to combine text with images and documents in your requests. This enables rich interactions that leverage both ...",
+      "## Image Understanding Capabilities  \nClaude can:\n- Describe image contents\n- Read text in images (OCR)\n- Analyze charts and graphs\n- Compare multiple images\n- Answer questions about visual content\n- ...",
+      "# Vision  \n## Overview  \nClaude can analyze images passed in API requests. This enables use cases like document analysis, image description, visual question answering, and more.",
+      "# Computer Use  \n## Overview  \nComputer use is a beta feature that allows Claude to interact with a computer desktop environment. Claude can view screenshots, move the mouse, click elements, type text...",
+      "## Best Practices  \n- Use a dedicated virtual environment with minimal installed software.\n- Set the display resolution to match common desktop sizes (1920x1080).\n- Provide clear, specific instruction..."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "multimodal.md::Multimodal Capabilities/Overview::chunk_0",
+        "source_file": "multimodal.md",
+        "section": "Multimodal Capabilities/Overview",
+        "relevance_score": 0.6599,
+        "text_preview": "# Multimodal Capabilities  \n## Overview  \nClaude supports multimodal inputs, allowing you to combine text with images and documents in your requests. This enables rich interactions that leverage both ..."
+      },
+      {
+        "chunk_id": "multimodal.md::Multimodal Capabilities/Image Understanding Capabilities::chunk_0",
+        "source_file": "multimodal.md",
+        "section": "Multimodal Capabilities/Image Understanding Capabilities",
+        "relevance_score": 0.5553,
+        "text_preview": "## Image Understanding Capabilities  \nClaude can:\n- Describe image contents\n- Read text in images (OCR)\n- Analyze charts and graphs\n- Compare multiple images\n- Answer questions about visual content\n- ..."
+      },
+      {
+        "chunk_id": "vision.md::Vision/Overview::chunk_0",
+        "source_file": "vision.md",
+        "section": "Vision/Overview",
+        "relevance_score": 0.5408,
+        "text_preview": "# Vision  \n## Overview  \nClaude can analyze images passed in API requests. This enables use cases like document analysis, image description, visual question answering, and more."
+      },
+      {
+        "chunk_id": "computer-use.md::Computer Use/Overview::chunk_0",
+        "source_file": "computer-use.md",
+        "section": "Computer Use/Overview",
+        "relevance_score": 0.5279,
+        "text_preview": "# Computer Use  \n## Overview  \nComputer use is a beta feature that allows Claude to interact with a computer desktop environment. Claude can view screenshots, move the mouse, click elements, type text..."
+      },
+      {
+        "chunk_id": "computer-use.md::Computer Use/Best Practices::chunk_0",
+        "source_file": "computer-use.md",
+        "section": "Computer Use/Best Practices",
+        "relevance_score": 0.5243,
+        "text_preview": "## Best Practices  \n- Use a dedicated virtual environment with minimal installed software.\n- Set the display resolution to match common desktop sizes (1920x1080).\n- Provide clear, specific instruction..."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "How many tokens can Opus 4.7 handle as input?",
+    "ground_truth_answer": "Claude Opus 4.7 can handle 200K tokens as input, extendable up to 1M tokens with extended context.",
+    "ground_truth_context": "Context window: 200K tokens (up to 1M with extended context)",
+    "category": "paraphrased",
+    "actual_answer": "Claude Opus 4.7 can handle up to 200K tokens as input by default, but with an extended context window, it can handle up to 1 million tokens. This extended context is automatically available, requiring no special configuration [context-window.md::Context Window and Token Limits/Extended Context (Opus 4.7)::chunk_0]. The context window sizes are also summarized in [context-window.md::Context Window and Token Limits/Context Window Sizes::chunk_0].",
+    "retrieved_contexts": [
+      "## Extended Context (Opus 4.7)  \nClaude Opus 4.7 supports an extended context window of up to 1 million tokens. This is automatically available \u2014 no special configuration needed.",
+      "# Context Window and Token Limits  \n## Context Window Sizes  \n| Model | Context Window | Max Output |\n|-------|---------------|------------|\n| Claude Opus 4.7 | 200K tokens (1M with extended) | 32,768...",
+      "## Limitations  \n- Only available on Claude Opus 4.7 and Claude Sonnet 4.6\n- Thinking tokens count toward output token limits\n- Cannot be combined with certain features (e.g., streaming in some config...",
+      "## Context Window Limits  \n| Model | Context Window | Max Output Tokens |\n|-------|---------------|-------------------|\n| claude-opus-4-7 | 200,000 | 32,000 |\n| claude-sonnet-4-6 | 200,000 | 16,000 |\n...",
+      "## Minimum Cacheable Length  \nThe minimum cacheable prompt prefix length varies by model:\n- **Claude Opus**: 1,024 tokens\n- **Claude Sonnet**: 1,024 tokens\n- **Claude Haiku**: 2,048 tokens"
+    ],
+    "source_details": [
+      {
+        "chunk_id": "context-window.md::Context Window and Token Limits/Extended Context (Opus 4.7)::chunk_0",
+        "source_file": "context-window.md",
+        "section": "Context Window and Token Limits/Extended Context (Opus 4.7)",
+        "relevance_score": 0.7264,
+        "text_preview": "## Extended Context (Opus 4.7)  \nClaude Opus 4.7 supports an extended context window of up to 1 million tokens. This is automatically available \u2014 no special configuration needed."
+      },
+      {
+        "chunk_id": "context-window.md::Context Window and Token Limits/Context Window Sizes::chunk_0",
+        "source_file": "context-window.md",
+        "section": "Context Window and Token Limits/Context Window Sizes",
+        "relevance_score": 0.6409,
+        "text_preview": "# Context Window and Token Limits  \n## Context Window Sizes  \n| Model | Context Window | Max Output |\n|-------|---------------|------------|\n| Claude Opus 4.7 | 200K tokens (1M with extended) | 32,768..."
+      },
+      {
+        "chunk_id": "extended-thinking.md::Extended Thinking/Limitations::chunk_0",
+        "source_file": "extended-thinking.md",
+        "section": "Extended Thinking/Limitations",
+        "relevance_score": 0.6122,
+        "text_preview": "## Limitations  \n- Only available on Claude Opus 4.7 and Claude Sonnet 4.6\n- Thinking tokens count toward output token limits\n- Cannot be combined with certain features (e.g., streaming in some config..."
+      },
+      {
+        "chunk_id": "token-counting.md::Token Counting/Context Window Limits::chunk_0",
+        "source_file": "token-counting.md",
+        "section": "Token Counting/Context Window Limits",
+        "relevance_score": 0.5914,
+        "text_preview": "## Context Window Limits  \n| Model | Context Window | Max Output Tokens |\n|-------|---------------|-------------------|\n| claude-opus-4-7 | 200,000 | 32,000 |\n| claude-sonnet-4-6 | 200,000 | 16,000 |\n..."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Minimum Cacheable Length::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Minimum Cacheable Length",
+        "relevance_score": 0.5698,
+        "text_preview": "## Minimum Cacheable Length  \nThe minimum cacheable prompt prefix length varies by model:\n- **Claude Opus**: 1,024 tokens\n- **Claude Sonnet**: 1,024 tokens\n- **Claude Haiku**: 2,048 tokens"
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "What's the cost per million input tokens for the cheapest Claude model?",
+    "ground_truth_answer": "The cheapest Claude model is Haiku 4.5 at $0.80 per million input tokens.",
+    "ground_truth_context": "Claude Haiku 4.5: Input tokens $0.80 / MTok",
+    "category": "paraphrased",
+    "actual_answer": "To determine the cost per million input tokens for the cheapest Claude model, we first need to identify the cheapest model and then find its input token pricing.\n\nThe cheapest model is likely to be Claude Haiku 4.5, as it is described as \"the fastest and most cost-effective model\" [models-overview.md::chunk_0].\n\nThe input token price for Claude Haiku 4.5 is $0.80/MTok, as listed in the pricing table [prompt-caching.md::chunk_0].\n\nTherefore, the cost per million input tokens for the cheapest Claude model, Claude Haiku 4.5, is $0.80.\n\nRelevant chunks: [models-overview.md::chunk_0], [prompt-caching.md::chunk_0].",
+    "retrieved_contexts": [
+      "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc...",
+      "# Claude API Pricing  \n## Model Pricing  \n### Claude Opus 4.7\n| Feature | Price |\n|---------|-------|\n| Input tokens | $15 / MTok |\n| Output tokens | $75 / MTok |\n| Prompt caching write | $18.75 / MTo...",
+      "## Estimating Costs  \nMultiply token counts by the per-token price for your model. Input and output tokens are priced differently:  \n```\nCost = (input_tokens * input_price) + (output_tokens * output_p...",
+      "## Pricing  \n| Model | Base Input | Cache Write | Cache Read |\n|-------|-----------|-------------|------------|\n| Claude Opus 4.7 | $15/MTok | $18.75/MTok | $1.50/MTok |\n| Claude Sonnet 4.6 | $3/MTok ...",
+      "### Claude Haiku 4.5\nClaude Haiku 4.5 is the fastest and most cost-effective model, ideal for lightweight tasks and high-volume applications.  \n- **Context window**: 200K tokens\n- **Max output**: 8,19..."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "extended-thinking.md::Extended Thinking/Budget Tokens::chunk_0",
+        "source_file": "extended-thinking.md",
+        "section": "Extended Thinking/Budget Tokens",
+        "relevance_score": 0.6257,
+        "text_preview": "## Budget Tokens  \nThe `budget_tokens` parameter controls how many tokens Claude can use for thinking:\n- Minimum: 1,024 tokens\n- Maximum: 128,000 tokens\n- Higher budgets allow deeper reasoning but inc..."
+      },
+      {
+        "chunk_id": "pricing.md::Claude API Pricing/Model Pricing/Claude Opus 4.7::chunk_0",
+        "source_file": "pricing.md",
+        "section": "Claude API Pricing/Model Pricing/Claude Opus 4.7",
+        "relevance_score": 0.5942,
+        "text_preview": "# Claude API Pricing  \n## Model Pricing  \n### Claude Opus 4.7\n| Feature | Price |\n|---------|-------|\n| Input tokens | $15 / MTok |\n| Output tokens | $75 / MTok |\n| Prompt caching write | $18.75 / MTo..."
+      },
+      {
+        "chunk_id": "token-counting.md::Token Counting/Estimating Costs::chunk_0",
+        "source_file": "token-counting.md",
+        "section": "Token Counting/Estimating Costs",
+        "relevance_score": 0.5536,
+        "text_preview": "## Estimating Costs  \nMultiply token counts by the per-token price for your model. Input and output tokens are priced differently:  \n```\nCost = (input_tokens * input_price) + (output_tokens * output_p..."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Pricing::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Pricing",
+        "relevance_score": 0.5293,
+        "text_preview": "## Pricing  \n| Model | Base Input | Cache Write | Cache Read |\n|-------|-----------|-------------|------------|\n| Claude Opus 4.7 | $15/MTok | $18.75/MTok | $1.50/MTok |\n| Claude Sonnet 4.6 | $3/MTok ..."
+      },
+      {
+        "chunk_id": "models-overview.md::Claude Models Overview/Latest Models/Claude Haiku 4.5::chunk_0",
+        "source_file": "models-overview.md",
+        "section": "Claude Models Overview/Latest Models/Claude Haiku 4.5",
+        "relevance_score": 0.4652,
+        "text_preview": "### Claude Haiku 4.5\nClaude Haiku 4.5 is the fastest and most cost-effective model, ideal for lightweight tasks and high-volume applications.  \n- **Context window**: 200K tokens\n- **Max output**: 8,19..."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "How do I install Anthropic's command-line coding tool?",
+    "ground_truth_answer": "Install Claude Code with: npm install -g @anthropic-ai/claude-code",
+    "ground_truth_context": "npm install -g @anthropic-ai/claude-code",
+    "category": "paraphrased",
+    "actual_answer": "To install Anthropic's command-line coding tool, which is called Claude Code, you can use the following command [claude-code.md::Claude Code/Installation::chunk_0]:\n```bash\nnpm install -g @anthropic-ai/claude-code\n```\nThis will install Claude Code globally on your system, allowing you to use it directly in your terminal. Note that this is different from the Python SDK, which is installed using `pip install anthropic` [anthropic-sdks.md::Anthropic SDKs/Python SDK/Installation::chunk_0]. Claude Code offers various features such as agentic coding, terminal integration, context awareness, and tool use [claude-code.md::Claude Code/Key Features::chunk_0].",
+    "retrieved_contexts": [
+      "# Claude Code  \n## Overview  \nClaude Code is Anthropic's official agentic coding tool that operates directly in your terminal. It understands your codebase, can edit files, run commands, and help with...",
+      "## Installation  \n```bash\nnpm install -g @anthropic-ai/claude-code\n```",
+      "# Anthropic SDKs  \n## Python SDK  \n### Installation  \n```bash\npip install anthropic\n```",
+      "## Key Features  \n- **Agentic coding**: Claude Code can autonomously explore codebases, make multi-file edits, run tests, and fix bugs\n- **Terminal integration**: Works directly in your terminal with ...",
+      "# Enterprise Features  \n## Overview  \nAnthropic offers enterprise-grade features for organizations that require advanced security, compliance, and administrative controls when using Claude. These feat..."
+    ],
+    "source_details": [
+      {
+        "chunk_id": "claude-code.md::Claude Code/Overview::chunk_0",
+        "source_file": "claude-code.md",
+        "section": "Claude Code/Overview",
+        "relevance_score": 0.6497,
+        "text_preview": "# Claude Code  \n## Overview  \nClaude Code is Anthropic's official agentic coding tool that operates directly in your terminal. It understands your codebase, can edit files, run commands, and help with..."
+      },
+      {
+        "chunk_id": "claude-code.md::Claude Code/Installation::chunk_0",
+        "source_file": "claude-code.md",
+        "section": "Claude Code/Installation",
+        "relevance_score": 0.6223,
+        "text_preview": "## Installation  \n```bash\nnpm install -g @anthropic-ai/claude-code\n```"
+      },
+      {
+        "chunk_id": "anthropic-sdks.md::Anthropic SDKs/Python SDK/Installation::chunk_0",
+        "source_file": "anthropic-sdks.md",
+        "section": "Anthropic SDKs/Python SDK/Installation",
+        "relevance_score": 0.5607,
+        "text_preview": "# Anthropic SDKs  \n## Python SDK  \n### Installation  \n```bash\npip install anthropic\n```"
+      },
+      {
+        "chunk_id": "claude-code.md::Claude Code/Key Features::chunk_0",
+        "source_file": "claude-code.md",
+        "section": "Claude Code/Key Features",
+        "relevance_score": 0.5374,
+        "text_preview": "## Key Features  \n- **Agentic coding**: Claude Code can autonomously explore codebases, make multi-file edits, run tests, and fix bugs\n- **Terminal integration**: Works directly in your terminal with ..."
+      },
+      {
+        "chunk_id": "enterprise-features.md::Enterprise Features/Overview::chunk_0",
+        "source_file": "enterprise-features.md",
+        "section": "Enterprise Features/Overview",
+        "relevance_score": 0.4624,
+        "text_preview": "# Enterprise Features  \n## Overview  \nAnthropic offers enterprise-grade features for organizations that require advanced security, compliance, and administrative controls when using Claude. These feat..."
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  },
+  {
+    "question": "What is the cache lifetime for prompt caching in Claude?",
+    "ground_truth_answer": "Cached prompts have a minimum lifetime of 5 minutes. Each time a cached prompt is used, the lifetime is extended by 5 minutes.",
+    "ground_truth_context": "Cached prompts have a minimum lifetime of 5 minutes. Each time a cached prompt is used, the lifetime is extended by 5 minutes.",
+    "category": "factual",
+    "actual_answer": "The cache lifetime for prompt caching in Claude is at least 5 minutes. Each time a cached prompt is used, the lifetime is extended by 5 minutes. However, the cache is ephemeral and not guaranteed to persist [prompt-caching.md::Prompt Caching/Cache Lifetime::chunk_0].",
+    "retrieved_contexts": [
+      "## Cache Lifetime  \nCached prompts have a minimum lifetime of 5 minutes. Each time a cached prompt is used, the lifetime is extended by 5 minutes. The cache is ephemeral and not guaranteed to persist.",
+      "# Prompt Caching  \n## Overview  \nPrompt caching allows you to cache frequently used context between API calls, reducing latency by up to 85% and costs by up to 90% for long prompts.",
+      "## How It Works  \nWhen you send a request with prompt caching enabled, Anthropic's infrastructure:\n1. Checks if a prefix of your prompt is already cached\n2. If cached, uses the cached version (cache h...",
+      "### Prompt Caching  \nUse prompt caching to make few-shot examples and large system prompts cost-effective. Cached tokens are charged at a reduced rate, making it economical to include detailed instruc...",
+      "## Minimum Cacheable Length  \nThe minimum cacheable prompt prefix length varies by model:\n- **Claude Opus**: 1,024 tokens\n- **Claude Sonnet**: 1,024 tokens\n- **Claude Haiku**: 2,048 tokens"
+    ],
+    "source_details": [
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Cache Lifetime::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Cache Lifetime",
+        "relevance_score": 0.728,
+        "text_preview": "## Cache Lifetime  \nCached prompts have a minimum lifetime of 5 minutes. Each time a cached prompt is used, the lifetime is extended by 5 minutes. The cache is ephemeral and not guaranteed to persist."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Overview::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Overview",
+        "relevance_score": 0.5985,
+        "text_preview": "# Prompt Caching  \n## Overview  \nPrompt caching allows you to cache frequently used context between API calls, reducing latency by up to 85% and costs by up to 90% for long prompts."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/How It Works::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/How It Works",
+        "relevance_score": 0.5811,
+        "text_preview": "## How It Works  \nWhen you send a request with prompt caching enabled, Anthropic's infrastructure:\n1. Checks if a prefix of your prompt is already cached\n2. If cached, uses the cached version (cache h..."
+      },
+      {
+        "chunk_id": "fine-tuning.md::Fine-Tuning/Alternatives to Fine-Tuning/Prompt Caching::chunk_0",
+        "source_file": "fine-tuning.md",
+        "section": "Fine-Tuning/Alternatives to Fine-Tuning/Prompt Caching",
+        "relevance_score": 0.5721,
+        "text_preview": "### Prompt Caching  \nUse prompt caching to make few-shot examples and large system prompts cost-effective. Cached tokens are charged at a reduced rate, making it economical to include detailed instruc..."
+      },
+      {
+        "chunk_id": "prompt-caching.md::Prompt Caching/Minimum Cacheable Length::chunk_0",
+        "source_file": "prompt-caching.md",
+        "section": "Prompt Caching/Minimum Cacheable Length",
+        "relevance_score": 0.5265,
+        "text_preview": "## Minimum Cacheable Length  \nThe minimum cacheable prompt prefix length varies by model:\n- **Claude Opus**: 1,024 tokens\n- **Claude Sonnet**: 1,024 tokens\n- **Claude Haiku**: 2,048 tokens"
+      }
+    ],
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "provider": "groq"
+  }
+]

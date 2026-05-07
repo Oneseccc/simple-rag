@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Service — Claude Docs</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
+        h1 { font-size: 1.8rem; margin-bottom: 0.5rem; color: #f8fafc; }
+        .subtitle { color: #94a3b8; margin-bottom: 2rem; font-size: 0.9rem; }
+        .container { width: 100%; max-width: 800px; }
+        .input-group { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        input[type="text"] { flex: 1; padding: 0.75rem 1rem; border: 1px solid #334155; border-radius: 8px; background: #1e293b; color: #f8fafc; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+        input[type="text"]:focus { border-color: #6366f1; }
+        button { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; background: #6366f1; color: white; font-size: 1rem; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+        button:hover { background: #4f46e5; }
+        button:disabled { background: #475569; cursor: not-allowed; }
+        .answer-box { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; min-height: 100px; white-space: pre-wrap; line-height: 1.6; }
+        .answer-box.empty { color: #64748b; font-style: italic; }
+        .sources { margin-top: 1rem; }
+        .sources h3 { font-size: 0.9rem; color: #94a3b8; margin-bottom: 0.5rem; cursor: pointer; user-select: none; }
+        .sources h3:hover { color: #cbd5e1; }
+        .source-item { background: #0f172a; border: 1px solid #1e293b; border-radius: 6px; padding: 0.75rem; margin-bottom: 0.5rem; font-size: 0.85rem; }
+        .source-item .chunk-id { color: #818cf8; font-weight: 600; font-size: 0.8rem; }
+        .source-item .file { color: #94a3b8; font-size: 0.75rem; }
+        .source-item .preview { color: #cbd5e1; margin-top: 0.3rem; }
+        .source-item .score { color: #34d399; font-size: 0.75rem; float: right; }
+        .meta { display: flex; gap: 1rem; font-size: 0.8rem; color: #64748b; margin-top: 0.5rem; }
+        .status { text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 1rem; }
+        .status.error { color: #f87171; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RAG Service</h1>
+        <p class="subtitle">Ask questions about Anthropic Claude documentation</p>
+
+        <div class="input-group">
+            <input type="text" id="question" placeholder="Ask a question..." autofocus>
+            <button id="askBtn" onclick="askQuestion()">Ask</button>
+        </div>
+
+        <div class="answer-box empty" id="answerBox">Ask a question to get started.</div>
+
+        <div class="meta hidden" id="metaInfo">
+            <span id="metaModel"></span>
+            <span id="metaProvider"></span>
+        </div>
+
+        <div class="sources hidden" id="sourcesSection">
+            <h3 id="sourcesToggle">&#9654; Sources (<span id="sourceCount">0</span>)</h3>
+            <div id="sourcesList" class="hidden"></div>
+        </div>
+
+        <div class="status" id="status"></div>
+    </div>
+
+    <script>
+        const input = document.getElementById('question');
+        input.addEventListener('keydown', function(e) { if (e.key === 'Enter') askQuestion(); });
+        document.getElementById('sourcesToggle').addEventListener('click', toggleSources);
+
+        function createSourceElement(source) {
+            var item = document.createElement('div');
+            item.className = 'source-item';
+
+            var score = document.createElement('span');
+            score.className = 'score';
+            score.textContent = (source.relevance_score * 100).toFixed(1) + '%';
+            item.appendChild(score);
+
+            var chunkId = document.createElement('div');
+            chunkId.className = 'chunk-id';
+            chunkId.textContent = source.chunk_id;
+            item.appendChild(chunkId);
+
+            var file = document.createElement('div');
+            file.className = 'file';
+            file.textContent = source.source_file + ' — ' + source.section;
+            item.appendChild(file);
+
+            var preview = document.createElement('div');
+            preview.className = 'preview';
+            preview.textContent = source.text_preview;
+            item.appendChild(preview);
+
+            return item;
+        }
+
+        async function askQuestion() {
+            var question = input.value.trim();
+            if (!question) return;
+
+            var btn = document.getElementById('askBtn');
+            var answerBox = document.getElementById('answerBox');
+            var status = document.getElementById('status');
+            var meta = document.getElementById('metaInfo');
+            var sourcesSection = document.getElementById('sourcesSection');
+            var sourcesList = document.getElementById('sourcesList');
+
+            btn.disabled = true;
+            btn.textContent = 'Thinking...';
+            answerBox.textContent = '';
+            answerBox.classList.remove('empty');
+            status.textContent = '';
+            status.className = 'status';
+            meta.classList.add('hidden');
+            sourcesSection.classList.add('hidden');
+
+            try {
+                var res = await fetch('/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question, top_k: 5 })
+                });
+
+                if (!res.ok) {
+                    var err = await res.json();
+                    throw new Error(err.detail || 'Request failed');
+                }
+
+                var data = await res.json();
+                answerBox.textContent = data.answer;
+
+                document.getElementById('metaModel').textContent = 'Model: ' + data.model;
+                document.getElementById('metaProvider').textContent = 'Provider: ' + data.provider;
+                meta.classList.remove('hidden');
+
+                if (data.sources && data.sources.length) {
+                    document.getElementById('sourceCount').textContent = data.sources.length;
+                    sourcesList.textContent = '';
+                    data.sources.forEach(function(s) {
+                        sourcesList.appendChild(createSourceElement(s));
+                    });
+                    sourcesSection.classList.remove('hidden');
+                }
+            } catch (err) {
+                status.textContent = 'Error: ' + err.message;
+                status.className = 'status error';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Ask';
+            }
+        }
+
+        function toggleSources() {
+            var list = document.getElementById('sourcesList');
+            list.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>

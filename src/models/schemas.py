@@ -25,6 +25,7 @@ class Source(BaseModel):
     source_file: str
     section: str
     relevance_score: float
+    retrieval_method: str
     text_preview: str
 
 

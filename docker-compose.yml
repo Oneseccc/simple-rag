@@ -20,6 +20,7 @@ services:
         condition: service_started
     volumes:
       - ./corpus:/app/corpus:ro
+      - app-data:/app/data
 
   ollama:
     image: ollama/ollama:latest
@@ -36,3 +37,4 @@ services:
 volumes:
   chroma-data:
   ollama-data:
+  app-data:

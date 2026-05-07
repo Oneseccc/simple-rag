@@ -3,8 +3,11 @@ from __future__ import annotations
 from src.config import settings
 from src.core.embedder import get_embedder
 from src.core.llm import get_llm_provider
+from src.core.reranker import get_reranker
 from src.core.vectorstore import get_vectorstore
 from src.models.schemas import QueryResponse, Source
+
+RETRIEVAL_POOL = 20
 
 SYSTEM_PROMPT = """You are a helpful assistant answering questions about Anthropic Claude documentation.
 
@@ -21,6 +24,7 @@ class RAGPipeline:
         self._embedder = get_embedder()
         self._vectorstore = get_vectorstore()
         self._llm = get_llm_provider()
+        self._reranker = get_reranker()
 
     async def query(self, question: str, top_k: int | None = None) -> QueryResponse:
         k = top_k or settings.TOP_K
@@ -29,20 +33,25 @@ class RAGPipeline:
 
         results = self._vectorstore.query(
             query_embedding=query_embedding,
-            n_results=k,
+            n_results=RETRIEVAL_POOL,
         )
 
         context_parts = []
         sources = []
 
         if results["documents"] and results["documents"][0]:
-            for i, (doc, meta, distance) in enumerate(zip(
-                results["documents"][0],
-                results["metadatas"][0],
-                results["distances"][0],
-            )):
-                chunk_id = results["ids"][0][i]
-                relevance = 1.0 - distance
+            docs = results["documents"][0]
+            metas = results["metadatas"][0]
+            ids = results["ids"][0]
+            distances = results["distances"][0]
+
+            reranked_indices = self._reranker.rerank(question, docs, top_k=k)
+
+            for rank, i in enumerate(reranked_indices):
+                doc = docs[i]
+                meta = metas[i]
+                chunk_id = ids[i]
+                relevance = 1.0 - distances[i]
 
                 context_parts.append(
                     f"[CHUNK_ID: {chunk_id}]\n{doc}"

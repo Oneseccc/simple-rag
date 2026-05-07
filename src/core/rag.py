@@ -41,6 +41,7 @@ class RAGPipeline:
 
         candidates: dict[str, dict] = {}
         rrf_scores: dict[str, float] = {}
+        origins: dict[str, set[str]] = {}
 
         if vector_results["documents"] and vector_results["documents"][0]:
             for rank, (chunk_id, doc, meta, dist) in enumerate(zip(
@@ -51,6 +52,7 @@ class RAGPipeline:
             )):
                 candidates[chunk_id] = {"text": doc, "metadata": meta, "distance": dist}
                 rrf_scores[chunk_id] = rrf_scores.get(chunk_id, 0) + 1.0 / (RRF_K + rank + 1)
+                origins.setdefault(chunk_id, set()).add("vector")
 
         try:
             fts_results = get_cache().keyword_search(question, limit=RETRIEVAL_POOL)
@@ -59,11 +61,22 @@ class RAGPipeline:
                 if cid not in candidates:
                     candidates[cid] = {"text": hit["text"], "metadata": hit["metadata"], "distance": 0.5}
                 rrf_scores[cid] = rrf_scores.get(cid, 0) + 1.0 / (RRF_K + rank + 1)
+                origins.setdefault(cid, set()).add("keyword")
         except Exception as e:
             logger.warning("FTS5 keyword search failed, using vector-only: %s", e)
 
         sorted_ids = sorted(rrf_scores, key=lambda cid: rrf_scores[cid], reverse=True)
-        return [{"chunk_id": cid, **candidates[cid]} for cid in sorted_ids]
+        results = []
+        for cid in sorted_ids:
+            o = origins.get(cid, set())
+            if "vector" in o and "keyword" in o:
+                method = "vector & keyword"
+            elif "keyword" in o:
+                method = "keyword"
+            else:
+                method = "vector"
+            results.append({"chunk_id": cid, "retrieval_method": method, **candidates[cid]})
+        return results
 
     async def query(self, question: str, top_k: int | None = None) -> QueryResponse:
         k = top_k or settings.TOP_K
@@ -95,6 +108,7 @@ class RAGPipeline:
                     source_file=meta.get("source_file", ""),
                     section=section,
                     relevance_score=round(relevance, 4),
+                    retrieval_method=c.get("retrieval_method", "vector"),
                     text_preview=c["text"][:200] + "..." if len(c["text"]) > 200 else c["text"],
                 ))
 

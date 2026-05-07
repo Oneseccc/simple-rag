@@ -26,6 +26,10 @@
         .source-item .file { color: #94a3b8; font-size: 0.75rem; }
         .source-item .preview { color: #cbd5e1; margin-top: 0.3rem; }
         .source-item .score { color: #34d399; font-size: 0.75rem; float: right; }
+        .source-item .method { font-size: 0.65rem; padding: 1px 5px; border-radius: 3px; margin-left: 6px; font-weight: 500; }
+        .source-item .method.vector { background: #1e3a5f; color: #60a5fa; }
+        .source-item .method.keyword { background: #3b2f1e; color: #fbbf24; }
+        .source-item .method.both { background: #1e3b2f; color: #34d399; }
         .meta { display: flex; gap: 1rem; font-size: 0.8rem; color: #64748b; margin-top: 0.5rem; }
         .status { text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 1rem; }
         .status.error { color: #f87171; }
@@ -69,6 +73,11 @@
             var score = document.createElement('span');
             score.className = 'score';
             score.textContent = (source.relevance_score * 100).toFixed(1) + '%';
+            var method = document.createElement('span');
+            var rm = source.retrieval_method || 'vector';
+            method.className = 'method ' + (rm === 'vector & keyword' ? 'both' : rm);
+            method.textContent = rm;
+            score.appendChild(method);
             item.appendChild(score);
 
             var chunkId = document.createElement('div');

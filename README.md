@@ -130,11 +130,10 @@ docker compose exec ollama ollama pull llama3.2:3b
 ### POST /query
 ```json
 {
-  "question": "What is Claude?",
-  "top_k": 10
+  "question": "What is Claude?"
 }
 ```
-`top_k` is optional — omit it to use the `.env` default (5).
+`top_k` is controlled via the `TOP_K` environment variable (default: 5).
 
 Response includes answer with source citations, chunk IDs, relevance scores, and `retrieval_method` indicating whether each source was found via `"vector"`, `"keyword"`, or `"vector & keyword"` search.
 
@@ -226,7 +225,7 @@ Metrics are computed using DeepEval with Groq as the LLM judge:
 
 ## Configuration
 
-All parameters are configurable via environment variables (`.env`) and can be overridden per-request via the API:
+All parameters are configurable via environment variables (`.env`):
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
@@ -239,7 +238,7 @@ All parameters are configurable via environment variables (`.env`) and can be ov
 | `CHUNK_OVERLAP` | `50` | Overlap between chunks |
 | `TOP_K` | `5` | Number of chunks returned after reranking |
 
-`CHUNK_SIZE`, `CHUNK_OVERLAP`, and `TOP_K` set the server-side defaults. All three can be overridden per-request via the `/ingest` and `/query` endpoints.
+`CHUNK_SIZE` and `CHUNK_OVERLAP` can be overridden per-request via `/ingest`. `TOP_K` is set via the environment variable only.
 
 ## Known Limitations
 

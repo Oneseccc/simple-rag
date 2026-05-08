@@ -84,15 +84,15 @@ curl -X POST http://localhost:8080/query \
   -d '{"question": "What is the context window for Claude Opus 4.7?"}'
 ```
 
-> **Note:** Manual ingestion is not needed on first startup. The service automatically detects an empty ChromaDB collection and ingests from `corpus/anthropic/`. On subsequent restarts, it skips ingestion if data already exists. If you update the corpus files after the initial ingestion, you can either re-ingest manually or remove the Docker volumes and rebuild:
+> **Note:** Manual ingestion is not needed on first startup. The service automatically detects an empty ChromaDB collection and ingests from `corpus/anthropic/`. On subsequent restarts, it skips ingestion since data already exists. If you update the corpus files or want to re-ingest with different chunk parameters, you can either re-ingest manually or do a clean rebuild. When using the `/ingest` endpoint, omit `chunk_size`/`chunk_overlap` to use the `.env` defaults (`CHUNK_SIZE` and `CHUNK_OVERLAP`), or pass them explicitly to override:
 >
 > ```bash
-> # Option 1: Manual re-ingest (replaces existing chunks)
+> # Option 1: Manual re-ingest with custom chunk settings
 > curl -X POST http://localhost:8080/ingest \
 >   -H "Content-Type: application/json" \
->   -d '{"folder_path": "/app/corpus/anthropic"}'
+>   -d '{"folder_path": "/app/corpus/anthropic", "chunk_size": 1024, "chunk_overlap": 100}'
 >
-> # Option 2: Clean rebuild (removes all data and re-ingests on startup)
+> # Option 2: Clean rebuild (removes all data and re-ingests on startup with defaults)
 > docker compose down -v
 > docker compose up --build
 > ```
@@ -105,7 +105,8 @@ curl -X POST http://localhost:8080/query \
 
 docker compose --profile local up --build
 
-# Pull the model (first time only)
+# The build downloads the Ollama server (~4GB) but does not include an LLM model.
+# Pull the model before making any queries:
 docker compose exec ollama ollama pull llama3.2:3b
 ```
 
@@ -205,10 +206,15 @@ Two evaluation runs were performed with different judge models:
 
 ```bash
 # Run evaluation (requires the service to be running)
+
+# On Linux (global pip install is blocked, use a virtual environment):
+python3 -m venv venv && source venv/bin/activate
+
 pip install -r requirements-eval.txt
-python eval/run_eval.py
-python eval/report_generator.py
+python eval/run_eval.py && python eval/report_generator.py
 ```
+
+> **Note:** Step 1 (RAG response collection) uses whichever LLM provider is set in `.env` (`groq` or `ollama`). Step 2 (evaluation metrics) always requires a Groq API key — DeepEval uses Groq's OpenAI-compatible endpoint as the LLM judge, regardless of `LLM_PROVIDER`. Even fully local setups need a valid `GROQ_API_KEY` in `.env` to run evaluation.
 
 The evaluation dataset (`eval/dataset.json`) contains 22 question-answer pairs across 4 categories:
 - **Factual** (10): Direct lookups with clear answers
@@ -249,6 +255,7 @@ All parameters are configurable via environment variables (`.env`):
 - **No streaming**: Responses are returned as a complete JSON payload, not streamed via SSE.
 - **Cache has no TTL**: Cached responses persist indefinitely until cleared by re-ingestion.
 - **FTS5 keyword search**: Uses simple term splitting with OR matching — no stemming, no query expansion, no phrase matching.
+- **Evaluation requires Groq**: The eval pipeline uses DeepEval with Groq's OpenAI-compatible API as the LLM judge. Even fully local setups (Ollama) need a Groq API key to run evaluation.
 
 ## What I Would Improve
 
@@ -258,6 +265,7 @@ All parameters are configurable via environment variables (`.env`):
 4. **Streaming responses**: Add an SSE endpoint for real-time answer streaming — currently the full response is generated before returning, which adds perceived latency on slower models.
 5. **Corpus expansion**: Evaluation revealed a gap in extended thinking documentation. The corpus covers 10 Anthropic doc pages; adding pages on extended thinking, prompt caching, and the Messages API reference would improve coverage for multi-hop questions.
 6. **Query expansion**: Use the LLM to rewrite ambiguous or paraphrased queries before retrieval. Evaluation showed paraphrased questions scored lower than factual ones, suggesting the retriever struggles with alternative phrasings.
+7. **Local evaluation support**: Wire DeepEval to use Ollama as the LLM judge so the entire pipeline (RAG + evaluation) can run fully offline without a Groq API key.
 
 ## Project Structure
 

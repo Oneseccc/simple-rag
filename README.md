@@ -68,9 +68,10 @@ cd simple-rag
 cp .env.example .env
 # Edit .env and add your GROQ_API_KEY
 
-# 3. Download the documentation corpus
-pip install httpx
-python scripts/download_corpus.py
+# 3. The corpus is already included in the repo (corpus/anthropic/).
+#    Only run this if the files are missing or you want to re-download:
+# pip install httpx
+# python scripts/download_corpus.py
 
 # 4. Start the services (auto-ingests corpus on first startup)
 docker compose up --build

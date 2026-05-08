@@ -12,7 +12,7 @@ router = APIRouter()
 
 @router.post("/query", response_model=QueryResponse)
 async def query_documents(request: QueryRequest):
-    top_k = request.top_k or settings.TOP_K
+    top_k = settings.TOP_K
     cache = get_cache()
     cached = cache.get(request.question, top_k)
     if cached:

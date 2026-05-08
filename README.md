@@ -121,18 +121,20 @@ docker compose exec ollama ollama pull llama3.2:3b
 ```json
 {
   "folder_path": "corpus/anthropic",
-  "chunk_size": 512,
-  "chunk_overlap": 50
+  "chunk_size": 1024,
+  "chunk_overlap": 100
 }
 ```
+`chunk_size` and `chunk_overlap` are optional — omit them to use the `.env` defaults (512 and 50).
 
 ### POST /query
 ```json
 {
   "question": "What is Claude?",
-  "top_k": 5
+  "top_k": 10
 }
 ```
+`top_k` is optional — omit it to use the `.env` default (5).
 
 Response includes answer with source citations, chunk IDs, relevance scores, and `retrieval_method` indicating whether each source was found via `"vector"`, `"keyword"`, or `"vector & keyword"` search.
 
@@ -237,7 +239,7 @@ All parameters are configurable via environment variables (`.env`) and can be ov
 | `CHUNK_OVERLAP` | `50` | Overlap between chunks |
 | `TOP_K` | `5` | Number of chunks returned after reranking |
 
-Chunking parameters can also be overridden per-request via the `/ingest` endpoint.
+`CHUNK_SIZE`, `CHUNK_OVERLAP`, and `TOP_K` set the server-side defaults. All three can be overridden per-request via the `/ingest` and `/query` endpoints.
 
 ## Known Limitations
 

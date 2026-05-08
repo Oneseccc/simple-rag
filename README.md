@@ -84,7 +84,18 @@ curl -X POST http://localhost:8080/query \
   -d '{"question": "What is the context window for Claude Opus 4.7?"}'
 ```
 
-> **Note:** Manual ingestion via `curl /ingest` is no longer needed. The service automatically detects an empty ChromaDB collection on startup and ingests from `corpus/anthropic/`. On subsequent restarts, it skips ingestion if data already exists.
+> **Note:** Manual ingestion is not needed on first startup. The service automatically detects an empty ChromaDB collection and ingests from `corpus/anthropic/`. On subsequent restarts, it skips ingestion if data already exists. If you update the corpus files after the initial ingestion, you can either re-ingest manually or remove the Docker volumes and rebuild:
+>
+> ```bash
+> # Option 1: Manual re-ingest (replaces existing chunks)
+> curl -X POST http://localhost:8080/ingest \
+>   -H "Content-Type: application/json" \
+>   -d '{"folder_path": "/app/corpus/anthropic"}'
+>
+> # Option 2: Clean rebuild (removes all data and re-ingests on startup)
+> docker compose down -v
+> docker compose up --build
+> ```
 
 ### Fully Local Setup (No API Key)
 
@@ -213,7 +224,7 @@ Metrics are computed using DeepEval with Groq as the LLM judge:
 
 ## Configuration
 
-All parameters are configurable via environment variables (`.env`) or `config.yaml`:
+All parameters are configurable via environment variables (`.env`) and can be overridden per-request via the API:
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
@@ -268,7 +279,6 @@ Chunking parameters can also be overridden per-request via the `/ingest` endpoin
 ├── eval/                    # Evaluation dataset, runner, reports
 ├── scripts/                 # Corpus download, data seeding
 ├── tests/                   # Unit tests
-├── config.yaml              # Chunking and retrieval configuration
 ├── docker-compose.yml       # Container orchestration (app + ChromaDB; Ollama with --profile local)
 ├── Dockerfile               # App container with pre-downloaded models
 └── docs/claude-code-session/ # AI-assisted workflow transcript

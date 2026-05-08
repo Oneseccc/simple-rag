@@ -16,6 +16,8 @@ DOCS = [
     ("https://platform.claude.com/docs/en/build-with-claude/embeddings.md", "embeddings.md"),
     ("https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview.md", "tool-use.md"),
     ("https://platform.claude.com/docs/en/intro.md", "intro.md"),
+    ("https://platform.claude.com/docs/en/build-with-claude/vision.md", "vision.md"),
+    ("https://platform.claude.com/docs/en/build-with-claude/streaming.md", "streaming.md"),
 ]
 
 

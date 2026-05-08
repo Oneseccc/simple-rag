@@ -2558,3 +2558,1174 @@
 ✻ Cogitated for 1m 45s
 
 ※ recap: Building a containerized RAG service for Anthropic docs with evaluation. Core pipeline, hybrid search, reranking, caching, and web UI are all implemented. Next step is to rebuild the Docker image and test the full flow end to end.
+
+❯ /export
+  ⎿  Conversation exported to: /mnt/c/masaustu karisik/İş başvurusu/Hackaton/session-export.txt
+
+※ recap: We're building a containerized RAG service for Anthropic docs with evaluation. The core system, hybrid search, reranking, caching,
+  auto-ingest, and web UI are all implemented. Next step is rebuilding the Docker image and running the evaluation suite
+
+❯ I want you to help me and change the script for corpus, do these changes:  ## 1. Rewrite `scripts/download_corpus.py`
+  The current script has a huge MANUAL_DOCS dict with AI-generated content hardcoded as strings, plus cookbook download logic. Replace all
+  of that. The script should download real .md files directly from Anthropic's documentation site.
+    These are the exact URLs to download (raw markdown files served directly):
+
+    https://platform.claude.com/docs/en/about-claude/models/overview.md -> models-overview.md
+    https://platform.claude.com/docs/en/about-claude/models/choosing-a-model.md -> choosing-a-model.md
+    https://platform.claude.com/docs/en/about-claude/pricing.md -> pricing.md
+    https://platform.claude.com/docs/en/api/rate-limits.md -> rate-limits.md
+    https://platform.claude.com/docs/en/build-with-claude/context-windows.md -> context-windows.md
+    https://platform.claude.com/docs/en/build-with-claude/embeddings.md -> embeddings.md
+    https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview.md -> tool-use.md
+    https://platform.claude.com/docs/en/intro.md -> intro.md
+
+    Only these 8 files. Nothing else.
+
+    Requirements for the script:
+    - Use httpx to download each .md file directly (they serve raw markdown)
+    - Save to `corpus/anthropic/` directory
+    - Skip files that already exist (keep the existing skip logic)
+    - Remove the entire MANUAL_DOCS dict and write_manual_docs() function — no more AI-generated content
+    - Remove the cookbook downloads section too (COOKBOOK_FILES, download_cookbook_files, extract_notebook_markdown) — we only want the
+  direct
+    .md files
+    - Keep it simple: just a list of (url, local_filename) tuples and a download loop
+    - Print progress as it downloads
+
+  Read 1 file (ctrl+o to expand)
+
+● Write(scripts/download_corpus.py)
+  ⎿  Added 19 lines, removed 1092 lines
+         1 -"""Download Anthropic Claude documentation for the RAG corpus.
+         2 -
+         3 -Fetches markdown content from the Anthropic docs site and cookbook repository.
+         4 -"""
+         1 +"""Download Anthropic Claude documentation for the RAG corpus."""
+         2  from __future__ import annotations
+         3
+         7 -import os
+         8 -import re
+         4  from pathlib import Path
+         5
+        11 -try:
+        12 -    import httpx
+        13 -    HAS_HTTPX = True
+        14 -except ImportError:
+        15 -    HAS_HTTPX = False
+         6 +import httpx
+         7
+         8  CORPUS_DIR = Path(__file__).parent.parent / "corpus" / "anthropic"
+         9
+        19 -COOKBOOK_FILES = [
+        20 -    ("misc/prompt_caching.ipynb", "prompt-caching.md"),
+        21 -    ("misc/prompt_engineering_interactive_tutorial/Anthropic 1P/01_Basic_Prompt_Structure.ipynb", "prompt-engineering-basic
+           -s.md"),
+        22 -    ("misc/prompt_engineering_interactive_tutorial/Anthropic 1P/02_Being_Clear_and_Direct.ipynb", "prompt-engineering-clear
+           --direct.md"),
+        23 -    ("misc/prompt_engineering_interactive_tutorial/Anthropic 1P/03_Assigning_Roles.ipynb", "prompt-engineering-roles.md"),
+        24 -    ("misc/prompt_engineering_interactive_tutorial/Anthropic 1P/04_Separating_Data_from_Instructions.ipynb", "prompt-engine
+           -ering-data-separation.md"),
+        25 -    ("misc/prompt_engineering_interactive_tutorial/Anthropic 1P/05_Formatting_Output_and_Speaking_for_Claude.ipynb", "promp
+           -t-engineering-formatting.md"),
+        26 -    ("misc/prompt_engineering_interactive_tutorial/Anthropic 1P/06_Thinking_Step_by_Step.ipynb", "prompt-engineering-chain-
+           -of-thought.md"),
+        27 -    ("misc/prompt_engineering_interactive_tutorial/Anthropic 1P/07_Using_Examples.ipynb", "prompt-engineering-examples.md")
+           -,
+        28 -    ("misc/prompt_engineering_interactive_tutorial/Anthropic 1P/08_Avoiding_Hallucinations.ipynb", "prompt-engineering-hall
+           -ucinations.md"),
+        29 -    ("misc/prompt_engineering_interactive_tutorial/Anthropic 1P/09_Complex_Prompts_for_Financial_Analysis.ipynb", "prompt-e
+           -ngineering-complex-prompts.md"),
+        30 -    ("misc/tool_use/tool_use.ipynb", "tool-use-guide.md"),
+        31 -    ("misc/citations/pdf_with_citations.ipynb", "citations-guide.md"),
+        10 +DOCS = [
+        11 +    ("https://platform.claude.com/docs/en/about-claude/models/overview.md", "models-overview.md"),
+        12 +    ("https://platform.claude.com/docs/en/about-claude/models/choosing-a-model.md", "choosing-a-model.md"),
+        13 +    ("https://platform.claude.com/docs/en/about-claude/pricing.md", "pricing.md"),
+        14 +    ("https://platform.claude.com/docs/en/api/rate-limits.md", "rate-limits.md"),
+        15 +    ("https://platform.claude.com/docs/en/build-with-claude/context-windows.md", "context-windows.md"),
+        16 +    ("https://platform.claude.com/docs/en/build-with-claude/embeddings.md", "embeddings.md"),
+        17 +    ("https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview.md", "tool-use.md"),
+        18 +    ("https://platform.claude.com/docs/en/intro.md", "intro.md"),
+        19  ]
+        20
+        34 -COOKBOOK_RAW_URL = "https://raw.githubusercontent.com/anthropics/anthropic-cookbook/main/"
+        21
+        36 -
+        37 -def extract_notebook_markdown(notebook_json: dict) -> str:
+        38 -    """Extract markdown and code cells from a Jupyter notebook."""
+        39 -    lines = []
+        40 -    for cell in notebook_json.get("cells", []):
+        41 -        cell_type = cell.get("cell_type", "")
+        42 -        source = "".join(cell.get("source", []))
+        43 -        if cell_type == "markdown":
+        44 -            lines.append(source)
+        45 -            lines.append("")
+        46 -        elif cell_type == "code" and source.strip():
+        47 -            lines.append("```python")
+        48 -            lines.append(source)
+        49 -            lines.append("```")
+        50 -            lines.append("")
+        51 -    return "\n".join(lines)
+        52 -
+        53 -
+        54 -def download_cookbook_files():
+        55 -    """Download files from the Anthropic cookbook repository."""
+        56 -    if not HAS_HTTPX:
+        57 -        print("  Skipping cookbook downloads (httpx not installed). Install with: pip install httpx")
+        58 -        return
+        22 +def main():
+        23 +    CORPUS_DIR.mkdir(parents=True, exist_ok=True)
+        24      client = httpx.Client(timeout=30.0, follow_redirects=True)
+        25
+        61 -    for remote_path, local_name in COOKBOOK_FILES:
+        62 -        url = COOKBOOK_RAW_URL + remote_path
+        63 -        target = CORPUS_DIR / local_name
+        26 +    for url, filename in DOCS:
+        27 +        target = CORPUS_DIR / filename
+        28          if target.exists():
+        65 -            print(f"  Skipping {local_name} (already exists)")
+        29 +            print(f"  Skipping {filename} (already exists)")
+        30              continue
+        31
+        68 -        print(f"  Downloading {local_name}...")
+        32 +        print(f"  Downloading {filename}...")
+        33          try:
+        34              resp = client.get(url)
+        35              resp.raise_for_status()
+        72 -
+        73 -            if remote_path.endswith(".ipynb"):
+        74 -                notebook = resp.json()
+        75 -                content = extract_notebook_markdown(notebook)
+        76 -            else:
+        77 -                content = resp.text
+        78 -
+        79 -            target.write_text(content, encoding="utf-8")
+        80 -            print(f"    Saved ({len(content)} chars)")
+        36 +            target.write_text(resp.text, encoding="utf-8")
+        37 +            print(f"    Saved ({len(resp.text)} chars)")
+        38          except Exception as e:
+        39              print(f"    Failed: {e}")
+        40
+        41      client.close()
+        42
+        86 -
+        87 -MANUAL_DOCS = {
+        88 -    "models-overview.md": """# Claude Models Overview
+        89 -
+        90 -## Latest Models
+        91 -
+        92 -### Claude Opus 4.7
+        93 -Claude Opus 4.7 is Anthropic's most capable model, offering the highest level of intelligence and performance. It excels at
+           - complex reasoning, analysis, and creative tasks.
+        94 -
+        95 -- **Context window**: 200K tokens (up to 1M with extended context)
+        96 -- **Max output**: 32,768 tokens (up to 128K with extended thinking)
+        97 -- **Training data cutoff**: January 2026
+        98 -- **Model ID**: `claude-opus-4-7`
+        99 -
+       100 -### Claude Sonnet 4.6
+       101 -Claude Sonnet 4.6 offers the best balance of speed and intelligence. It's the recommended model for most use cases.
+       102 -
+       103 -- **Context window**: 200K tokens
+       104 -- **Max output**: 16,384 tokens
+       105 -- **Training data cutoff**: Early 2025
+       106 -- **Model ID**: `claude-sonnet-4-6`
+       107 -
+       108 -### Claude Haiku 4.5
+       109 -Claude Haiku 4.5 is the fastest and most cost-effective model, ideal for lightweight tasks and high-volume applications.
+       110 -
+       111 -- **Context window**: 200K tokens
+       112 -- **Max output**: 8,192 tokens
+       113 -- **Training data cutoff**: Early 2025
+       114 -- **Model ID**: `claude-haiku-4-5-20251001`
+       115 -
+       116 -## Model Selection Guide
+       117 -
+       118 -Choose **Opus 4.7** when you need:
+       119 -- Maximum reasoning capability
+       120 -- Complex multi-step analysis
+       121 -- Extended thinking for difficult problems
+       122 -- Creative writing at the highest quality
+       123 -
+       124 -Choose **Sonnet 4.6** when you need:
+       125 -- Good balance of speed and intelligence
+       126 -- Most general-purpose tasks
+       127 -- Cost-effective performance
+       128 -
+       129 -Choose **Haiku 4.5** when you need:
+       130 -- Fast response times
+       131 -- High throughput
+       132 -- Simple classification or extraction tasks
+       133 -- Cost optimization
+       134 -""",
+       135 -    "api-basics.md": """# Claude API Basics
+       136 -
+       137 -## Authentication
+       138 -
+       139 -All API requests require an API key passed in the `x-api-key` header. You can create API keys in the Anthropic Console.
+       140 -
+       141 -```bash
+       142 -curl https://api.anthropic.com/v1/messages \\
+       143 -  -H "x-api-key: YOUR_API_KEY" \\
+       144 -  -H "content-type: application/json" \\
+       145 -  -H "anthropic-version: 2023-06-01"
+       146 -```
+       147 -
+       148 -## Messages API
+       149 -
+       150 -The Messages API is the primary way to interact with Claude. It accepts a series of messages and returns a model-generated
+           -response.
+       151 -
+       152 -### Request Format
+       153 -
+       154 -```json
+       155 -{
+       156 -  "model": "claude-sonnet-4-6",
+       157 -  "max_tokens": 1024,
+       158 -  "messages": [
+       159 -    {"role": "user", "content": "Hello, Claude!"}
+       160 -  ]
+       161 -}
+       162 -```
+       163 -
+       164 -### Response Format
+       165 -
+       166 -```json
+       167 -{
+       168 -  "id": "msg_01XFDUDYJgAACzvnptvVoYEL",
+       169 -  "type": "message",
+       170 -  "role": "assistant",
+       171 -  "content": [
+       172 -    {
+       173 -      "type": "text",
+       174 -      "text": "Hello! How can I help you today?"
+       175 -    }
+       176 -  ],
+       177 -  "model": "claude-sonnet-4-6",
+       178 -  "stop_reason": "end_turn",
+       179 -  "usage": {
+       180 -    "input_tokens": 12,
+       181 -    "output_tokens": 10
+       182 -  }
+       183 -}
+       184 -```
+       185 -
+       186 -### System Prompts
+       187 -
+       188 -You can provide a system prompt to set context and behavior:
+       189 -
+       190 -```json
+       191 -{
+       192 -  "model": "claude-sonnet-4-6",
+       193 -  "max_tokens": 1024,
+       194 -  "system": "You are a helpful coding assistant.",
+       195 -  "messages": [
+       196 -    {"role": "user", "content": "Write a Python function to sort a list."}
+       197 -  ]
+       198 -}
+       199 -```
+       200 -
+       201 -## Rate Limits
+       202 -
+       203 -Rate limits vary by model and plan:
+       204 -- Free tier: 5 RPM, 25K tokens per minute
+       205 -- Build tier: 50 RPM, 50K tokens per minute
+       206 -- Scale tier: Custom limits
+       207 -
+       208 -## Error Handling
+       209 -
+       210 -Common error codes:
+       211 -- `400`: Invalid request format
+       212 -- `401`: Invalid API key
+       213 -- `429`: Rate limit exceeded
+       214 -- `500`: Internal server error
+       215 -- `529`: API overloaded
+       216 -""",
+       217 -    "tool-use.md": """# Tool Use (Function Calling)
+       218 -
+       219 -## Overview
+       220 -
+       221 -Claude can use tools (also known as function calling) to interact with external systems. You define tools in your API reque
+           -st, and Claude can choose to call them when appropriate.
+       222 -
+       223 -## Defining Tools
+       224 -
+       225 -Tools are defined in the `tools` parameter of the Messages API request:
+       226 -
+       227 -```json
+       228 -{
+       229 -  "model": "claude-sonnet-4-6",
+       230 -  "max_tokens": 1024,
+       231 -  "tools": [
+       232 -    {
+       233 -      "name": "get_weather",
+       234 -      "description": "Get the current weather for a location",
+       235 -      "input_schema": {
+       236 -        "type": "object",
+       237 -        "properties": {
+       238 -          "location": {
+       239 -            "type": "string",
+       240 -            "description": "City and state, e.g. San Francisco, CA"
+       241 -          }
+       242 -        },
+       243 -        "required": ["location"]
+       244 -      }
+       245 -    }
+       246 -  ],
+       247 -  "messages": [
+       248 -    {"role": "user", "content": "What's the weather in San Francisco?"}
+       249 -  ]
+       250 -}
+       251 -```
+       252 -
+       253 -## Tool Limits
+       254 -
+       255 -The maximum number of tools that can be defined in a single API request is 128. Each tool definition counts toward the inpu
+           -t token limit.
+       256 -
+       257 -## Tool Use Flow
+       258 -
+       259 -1. **User sends message** with tool definitions
+       260 -2. **Claude decides** to use a tool and returns a `tool_use` content block
+       261 -3. **Your code executes** the tool and returns the result
+       262 -4. **Claude uses the result** to formulate a final response
+       263 -
+       264 -### Tool Use Response
+       265 -
+       266 -When Claude wants to use a tool, it returns:
+       267 -
+       268 -```json
+       269 -{
+       270 -  "content": [
+       271 -    {
+       272 -      "type": "tool_use",
+       273 -      "id": "toolu_01A09q90qw90lq917835lh9l",
+       274 -      "name": "get_weather",
+       275 -      "input": {"location": "San Francisco, CA"}
+       276 -    }
+       277 -  ],
+       278 -  "stop_reason": "tool_use"
+       279 -}
+       280 -```
+       281 -
+       282 -### Returning Tool Results
+       283 -
+       284 -```json
+       285 -{
+       286 -  "role": "user",
+       287 -  "content": [
+       288 -    {
+       289 -      "type": "tool_result",
+       290 -      "tool_use_id": "toolu_01A09q90qw90lq917835lh9l",
+       291 -      "content": "65°F, partly cloudy"
+       292 -    }
+       293 -  ]
+       294 -}
+       295 -```
+       296 -
+       297 -## Best Practices
+       298 -
+       299 -- Write clear, specific tool descriptions
+       300 -- Use descriptive parameter names
+       301 -- Include examples in descriptions when helpful
+       302 -- Handle errors gracefully in tool results
+       303 -- Keep tool definitions focused on a single task
+       304 -""",
+       305 -    "prompt-caching.md": """# Prompt Caching
+       306 -
+       307 -## Overview
+       308 -
+       309 -Prompt caching allows you to cache frequently used context between API calls, reducing latency by up to 85% and costs by up
+           - to 90% for long prompts.
+       310 -
+       311 -## How It Works
+       312 -
+       313 -When you send a request with prompt caching enabled, Anthropic's infrastructure:
+       314 -1. Checks if a prefix of your prompt is already cached
+       315 -2. If cached, uses the cached version (cache hit) — much faster and cheaper
+       316 -3. If not cached, processes the full prompt and caches the prefix for future use
+       317 -
+       318 -## Cache Lifetime
+       319 -
+       320 -Cached prompts have a minimum lifetime of 5 minutes. Each time a cached prompt is used, the lifetime is extended by 5 minut
+           -es. The cache is ephemeral and not guaranteed to persist.
+       321 -
+       322 -## Minimum Cacheable Length
+       323 -
+       324 -The minimum cacheable prompt prefix length varies by model:
+       325 -- **Claude Opus**: 1,024 tokens
+       326 -- **Claude Sonnet**: 1,024 tokens
+       327 -- **Claude Haiku**: 2,048 tokens
+       328 -
+       329 -## Using Cache Breakpoints
+       330 -
+       331 -Add `cache_control` to mark where the cache should break:
+       332 -
+       333 -```json
+       334 -{
+       335 -  "model": "claude-sonnet-4-6",
+       336 -  "max_tokens": 1024,
+       337 -  "system": [
+       338 -    {
+       339 -      "type": "text",
+       340 -      "text": "You are a helpful assistant with deep knowledge of...",
+       341 -      "cache_control": {"type": "ephemeral"}
+       342 -    }
+       343 -  ],
+       344 -  "messages": [
+       345 -    {"role": "user", "content": "Tell me about..."}
+       346 -  ]
+       347 -}
+       348 -```
+       349 -
+       350 -## Pricing
+       351 -
+       352 -| Model | Base Input | Cache Write | Cache Read |
+       353 -|-------|-----------|-------------|------------|
+       354 -| Claude Opus 4.7 | $15/MTok | $18.75/MTok | $1.50/MTok |
+       355 -| Claude Sonnet 4.6 | $3/MTok | $3.75/MTok | $0.30/MTok |
+       356 -| Claude Haiku 4.5 | $0.80/MTok | $1/MTok | $0.08/MTok |
+       357 -
+       358 -## Best Practices
+       359 -
+       360 -- Place static content (system prompts, examples, documentation) first
+       361 -- Put dynamic content (user messages) after the cache breakpoint
+       362 -- Use cache breakpoints strategically to maximize reuse
+       363 -- Monitor cache hit rates in your usage dashboard
+       364 -""",
+       365 -    "vision.md": """# Vision
+       366 -
+       367 -## Overview
+       368 -
+       369 -Claude can analyze images passed in API requests. This enables use cases like document analysis, image description, visual
+           -question answering, and more.
+       370 -
+       371 -## Supported Formats
+       372 -
+       373 -Claude supports the following image formats:
+       374 -- JPEG
+       375 -- PNG
+       376 -- GIF
+       377 -- WebP
+       378 -
+       379 -## Maximum Image Size
+       380 -
+       381 -- Maximum file size: 20 MB per image
+       382 -- Maximum dimensions: 8192 x 8192 pixels
+       383 -- Up to 20 images per request
+       384 -
+       385 -## Sending Images
+       386 -
+       387 -Images can be sent as base64-encoded data or as URLs:
+       388 -
+       389 -### Base64
+       390 -
+       391 -```json
+       392 -{
+       393 -  "model": "claude-sonnet-4-6",
+       394 -  "max_tokens": 1024,
+       395 -  "messages": [
+       396 -    {
+       397 -      "role": "user",
+       398 -      "content": [
+       399 -        {
+       400 -          "type": "image",
+       401 -          "source": {
+       402 -            "type": "base64",
+       403 -            "media_type": "image/jpeg",
+       404 -            "data": "/9j/4AAQSkZJRg..."
+       405 -          }
+       406 -        },
+       407 -        {
+       408 -          "type": "text",
+       409 -          "text": "What do you see in this image?"
+       410 -        }
+       411 -      ]
+       412 -    }
+       413 -  ]
+       414 -}
+       415 -```
+       416 -
+       417 -### URL
+       418 -
+       419 -```json
+       420 -{
+       421 -  "type": "image",
+       422 -  "source": {
+       423 -    "type": "url",
+       424 -    "url": "https://example.com/image.jpg"
+       425 -  }
+       426 -}
+       427 -```
+       428 -
+       429 -## Best Practices
+       430 -
+       431 -- Place images before text for best results
+       432 -- Use clear, specific questions about the image
+       433 -- For document analysis, ensure text is legible
+       434 -- Consider image size vs. token cost tradeoffs
+       435 -""",
+       436 -    "extended-thinking.md": """# Extended Thinking
+       437 -
+       438 -## Overview
+       439 -
+       440 -Extended thinking allows Claude to think through complex problems step-by-step before providing a response. This significan
+           -tly improves performance on tasks requiring deep reasoning, math, coding, and analysis.
+       441 -
+       442 -## How It Works
+       443 -
+       444 -When extended thinking is enabled, Claude generates internal "thinking" tokens that are used to reason through the problem.
+           - These thinking tokens are visible in the response but are clearly separated from the final answer.
+       445 -
+       446 -## Enabling Extended Thinking
+       447 -
+       448 -```json
+       449 -{
+       450 -  "model": "claude-opus-4-7",
+       451 -  "max_tokens": 16000,
+       452 -  "thinking": {
+       453 -    "type": "enabled",
+       454 -    "budget_tokens": 10000
+       455 -  },
+       456 -  "messages": [
+       457 -    {"role": "user", "content": "Solve this complex math problem..."}
+       458 -  ]
+       459 -}
+       460 -```
+       461 -
+       462 -## Budget Tokens
+       463 -
+       464 -The `budget_tokens` parameter controls how many tokens Claude can use for thinking:
+       465 -- Minimum: 1,024 tokens
+       466 -- Maximum: 128,000 tokens
+       467 -- Higher budgets allow deeper reasoning but increase latency and cost
+       468 -
+       469 -## Response Format
+       470 -
+       471 -```json
+       472 -{
+       473 -  "content": [
+       474 -    {
+       475 -      "type": "thinking",
+       476 -      "thinking": "Let me work through this step by step..."
+       477 -    },
+       478 -    {
+       479 -      "type": "text",
+       480 -      "text": "The answer is 42."
+       481 -    }
+       482 -  ]
+       483 -}
+       484 -```
+       485 -
+       486 -## When to Use Extended Thinking
+       487 -
+       488 -- Complex mathematical proofs
+       489 -- Multi-step reasoning problems
+       490 -- Code debugging and analysis
+       491 -- Strategic planning
+       492 -- Scientific analysis
+       493 -
+       494 -## Limitations
+       495 -
+       496 -- Only available on Claude Opus 4.7 and Claude Sonnet 4.6
+       497 -- Thinking tokens count toward output token limits
+       498 -- Cannot be combined with certain features (e.g., streaming in some configurations)
+       499 -- Thinking content may not always be coherent or complete
+       500 -""",
+       501 -    "embeddings.md": """# Embeddings
+       502 -
+       503 -## Overview
+       504 -
+       505 -While Anthropic does not provide a dedicated embeddings API, Claude can be used in conjunction with embedding models for RA
+           -G (Retrieval-Augmented Generation) and semantic search workflows.
+       506 -
+       507 -## Recommended Embedding Models
+       508 -
+       509 -For use with Claude-based RAG systems:
+       510 -
+       511 -### Local Models (via Ollama or sentence-transformers)
+       512 -- **all-MiniLM-L6-v2**: 384 dimensions, fast, good general-purpose quality
+       513 -- **nomic-embed-text**: 768 dimensions, strong performance on benchmarks
+       514 -- **bge-small-en-v1.5**: 384 dimensions, optimized for retrieval tasks
+       515 -
+       516 -### API-based Models
+       517 -- **Voyage AI**: Recommended by Anthropic for best quality embeddings
+       518 -- **OpenAI text-embedding-3-small**: 1536 dimensions, widely used
+       519 -
+       520 -## Best Practices for RAG with Claude
+       521 -
+       522 -1. **Chunk Size**: Use 256-1024 tokens per chunk depending on content type
+       523 -2. **Overlap**: 10-20% overlap between chunks preserves context
+       524 -3. **Metadata**: Store source information with embeddings for citations
+       525 -4. **Top-K**: Retrieve 3-10 chunks depending on context window budget
+       526 -5. **Prompt Design**: Clearly delineate retrieved context from the user question
+       527 -""",
+       528 -    "streaming.md": """# Streaming
+       529 -
+       530 -## Overview
+       531 -
+       532 -Streaming allows you to receive Claude's response in real-time as it's being generated, rather than waiting for the complet
+           -e response. This provides a better user experience for interactive applications.
+       533 -
+       534 -## Server-Sent Events (SSE)
+       535 -
+       536 -Claude uses Server-Sent Events for streaming. The stream sends events as the response is generated.
+       537 -
+       538 -## Enabling Streaming
+       539 -
+       540 -Set `stream: true` in your request:
+       541 -
+       542 -```json
+       543 -{
+       544 -  "model": "claude-sonnet-4-6",
+       545 -  "max_tokens": 1024,
+       546 -  "stream": true,
+       547 -  "messages": [
+       548 -    {"role": "user", "content": "Tell me a story."}
+       549 -  ]
+       550 -}
+       551 -```
+       552 -
+       553 -## Event Types
+       554 -
+       555 -### message_start
+       556 -Sent at the beginning of a response:
+       557 -```
+       558 -event: message_start
+       559 -data: {"type": "message_start", "message": {"id": "msg_...", "type": "message", "role": "assistant"}}
+       560 -```
+       561 -
+       562 -### content_block_delta
+       563 -Sent for each chunk of generated text:
+       564 -```
+       565 -event: content_block_delta
+       566 -data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "Once upon"}}
+       567 -```
+       568 -
+       569 -### message_stop
+       570 -Sent when the response is complete:
+       571 -```
+       572 -event: message_stop
+       573 -data: {"type": "message_stop"}
+       574 -```
+       575 -
+       576 -## Python SDK Example
+       577 -
+       578 -```python
+       579 -import anthropic
+       580 -
+       581 -client = anthropic.Anthropic()
+       582 -
+       583 -with client.messages.stream(
+       584 -    model="claude-sonnet-4-6",
+       585 -    max_tokens=1024,
+       586 -    messages=[{"role": "user", "content": "Tell me a story."}]
+       587 -) as stream:
+       588 -    for text in stream.text_stream:
+       589 -        print(text, end="", flush=True)
+       590 -```
+       591 -
+       592 -## Best Practices
+       593 -
+       594 -- Use streaming for interactive applications
+       595 -- Handle partial responses gracefully
+       596 -- Implement reconnection logic for dropped connections
+       597 -- Buffer output for UI rendering to avoid flicker
+       598 -""",
+       599 -    "safety.md": """# Safety and Usage Policies
+       600 -
+       601 -## Acceptable Use Policy
+       602 -
+       603 -Claude is designed to be helpful, harmless, and honest. The Acceptable Use Policy prohibits:
+       604 -- Generating illegal content
+       605 -- Creating malware or cyber weapons
+       606 -- Harassment or discrimination
+       607 -- Deception or fraud
+       608 -- Violating privacy
+       609 -
+       610 -## Content Filtering
+       611 -
+       612 -Claude has built-in content filtering that:
+       613 -- Refuses harmful requests
+       614 -- Avoids generating explicit content
+       615 -- Declines to assist with illegal activities
+       616 -- Provides safety disclaimers when appropriate
+       617 -
+       618 -## System Prompt Best Practices
+       619 -
+       620 -For safer deployments:
+       621 -1. Set clear behavioral boundaries in the system prompt
+       622 -2. Specify what topics the assistant should and shouldn't discuss
+       623 -3. Define the assistant's role and limitations
+       624 -4. Include instructions for handling edge cases
+       625 -
+       626 -## Responsible AI Development
+       627 -
+       628 -Anthropic recommends:
+       629 -- Testing for bias in your specific use case
+       630 -- Implementing human oversight for high-stakes decisions
+       631 -- Monitoring output quality in production
+       632 -- Establishing feedback mechanisms for users
+       633 -- Regular evaluation of system behavior
+       634 -""",
+       635 -    "batch-api.md": """# Message Batches API
+       636 -
+       637 -## Overview
+       638 -
+       639 -The Message Batches API allows you to send multiple message requests in a single batch, processing them asynchronously. Thi
+           -s is ideal for high-volume workloads that don't require real-time responses.
+       640 -
+       641 -## Benefits
+       642 -
+       643 -- **50% cost reduction** compared to standard API calls
+       644 -- Process up to 100,000 requests per batch
+       645 -- Results available within 24 hours (usually much faster)
+       646 -- No rate limit impact on your real-time API usage
+       647 -
+       648 -## Creating a Batch
+       649 -
+       650 -```json
+       651 -POST /v1/messages/batches
+       652 -
+       653 -{
+       654 -  "requests": [
+       655 -    {
+       656 -      "custom_id": "request-1",
+       657 -      "params": {
+       658 -        "model": "claude-sonnet-4-6",
+       659 -        "max_tokens": 1024,
+       660 -        "messages": [
+       661 -          {"role": "user", "content": "Summarize this article..."}
+       662 -        ]
+       663 -      }
+       664 -    },
+       665 -    {
+       666 -      "custom_id": "request-2",
+       667 -      "params": {
+       668 -        "model": "claude-sonnet-4-6",
+       669 -        "max_tokens": 1024,
+       670 -        "messages": [
+       671 -          {"role": "user", "content": "Translate this text..."}
+       672 -        ]
+       673 -      }
+       674 -    }
+       675 -  ]
+       676 -}
+       677 -```
+       678 -
+       679 -## Batch Status
+       680 -
+       681 -Check batch status:
+       682 -```
+       683 -GET /v1/messages/batches/{batch_id}
+       684 -```
+       685 -
+       686 -Possible statuses: `in_progress`, `ended`, `canceling`, `canceled`
+       687 -
+       688 -## Retrieving Results
+       689 -
+       690 -```
+       691 -GET /v1/messages/batches/{batch_id}/results
+       692 -```
+       693 -
+       694 -Each result includes the `custom_id` from the original request for matching.
+       695 -
+       696 -## Best Practices
+       697 -
+       698 -- Use meaningful `custom_id` values for tracking
+       699 -- Break very large jobs into multiple batches
+       700 -- Implement polling with exponential backoff for status checks
+       701 -- Handle partial failures gracefully
+       702 -""",
+       703 -    "claude-code.md": """# Claude Code
+       704 -
+       705 -## Overview
+       706 -
+       707 -Claude Code is Anthropic's official agentic coding tool that operates directly in your terminal. It understands your codeba
+           -se, can edit files, run commands, and help with complex software engineering tasks.
+       708 -
+       709 -## Key Features
+       710 -
+       711 -- **Agentic coding**: Claude Code can autonomously explore codebases, make multi-file edits, run tests, and fix bugs
+       712 -- **Terminal integration**: Works directly in your terminal with full shell access
+       713 -- **Context awareness**: Understands project structure, git history, and dependencies
+       714 -- **Tool use**: Can read files, write files, execute commands, and search code
+       715 -
+       716 -## Installation
+       717 -
+       718 -```bash
+       719 -npm install -g @anthropic-ai/claude-code
+       720 -```
+       721 -
+       722 -## Usage
+       723 -
+       724 -```bash
+       725 -# Start an interactive session
+       726 -claude
+       727 -
+       728 -# Run a one-shot command
+       729 -claude -p "explain this codebase"
+       730 -
+       731 -# Resume a previous session
+       732 -claude --resume
+       733 -```
+       734 -
+       735 -## CLAUDE.md
+       736 -
+       737 -CLAUDE.md is a special file that Claude Code reads for project-specific context. Place it in your project root to provide:
+       738 -- Project overview and architecture
+       739 -- Coding conventions
+       740 -- Build and test commands
+       741 -- Important context about the codebase
+       742 -
+       743 -## Slash Commands
+       744 -
+       745 -- `/help` — Show available commands
+       746 -- `/clear` — Clear conversation history
+       747 -- `/export` — Export the current session
+       748 -- `/model` — Switch between models
+       749 -- `/config` — View or modify settings
+       750 -
+       751 -## Best Practices
+       752 -
+       753 -- Keep CLAUDE.md concise and up-to-date
+       754 -- Use clear, specific instructions
+       755 -- Let Claude explore the codebase before making changes
+       756 -- Review changes before committing
+       757 -- Use git for version control as a safety net
+       758 -""",
+       759 -    "anthropic-sdks.md": """# Anthropic SDKs
+       760 -
+       761 -## Python SDK
+       762 -
+       763 -### Installation
+       764 -
+       765 -```bash
+       766 -pip install anthropic
+       767 -```
+       768 -
+       769 -### Basic Usage
+       770 -
+       771 -```python
+       772 -import anthropic
+       773 -
+       774 -client = anthropic.Anthropic()
+       775 -
+       776 -message = client.messages.create(
+       777 -    model="claude-sonnet-4-6",
+       778 -    max_tokens=1024,
+       779 -    messages=[
+       780 -        {"role": "user", "content": "Hello, Claude!"}
+       781 -    ]
+       782 -)
+       783 -print(message.content[0].text)
+       784 -```
+       785 -
+       786 -### With System Prompt
+       787 -
+       788 -```python
+       789 -message = client.messages.create(
+       790 -    model="claude-sonnet-4-6",
+       791 -    max_tokens=1024,
+       792 -    system="You are a helpful coding assistant.",
+       793 -    messages=[
+       794 -        {"role": "user", "content": "Write a quicksort in Python."}
+       795 -    ]
+       796 -)
+       797 -```
+       798 -
+       799 -### Streaming
+       800 -
+       801 -```python
+       802 -with client.messages.stream(
+       803 -    model="claude-sonnet-4-6",
+       804 -    max_tokens=1024,
+       805 -    messages=[{"role": "user", "content": "Tell me a story."}]
+       806 -) as stream:
+       807 -    for text in stream.text_stream:
+       808 -        print(text, end="", flush=True)
+       809 -```
+       810 -
+       811 -## TypeScript SDK
+       812 -
+       813 -### Installation
+       814 -
+       815 -```bash
+       816 -npm install @anthropic-ai/sdk
+       817 -```
+       818 -
+       819 -### Basic Usage
+       820 -
+       821 -```typescript
+       822 -import Anthropic from '@anthropic-ai/sdk';
+       823 -
+       824 -const client = new Anthropic();
+       825 -
+       826 -const message = await client.messages.create({
+       827 -    model: "claude-sonnet-4-6",
+       828 -    max_tokens: 1024,
+       829 -    messages: [
+       830 -        { role: "user", content: "Hello, Claude!" }
+       831 -    ],
+       832 -});
+       833 -console.log(message.content[0].text);
+       834 -```
+       835 -
+       836 -## Authentication
+       837 -
+       838 -Both SDKs read the `ANTHROPIC_API_KEY` environment variable by default. You can also pass it explicitly:
+       839 -
+       840 -```python
+       841 -client = anthropic.Anthropic(api_key="your-api-key")
+       842 -```
+       843 -
+       844 -## Error Handling
+       845 -
+       846 -```python
+       847 -try:
+       848 -    message = client.messages.create(...)
+       849 -except anthropic.APIError as e:
+       850 -    print(f"API error: {e.status_code}")
+       851 -except anthropic.APIConnectionError:
+       852 -    print("Connection failed")
+       853 -except anthropic.RateLimitError:
+       854 -    print("Rate limited - retry after backoff")
+       855 -```
+       856 -""",
+       857 -    "pricing.md": """# Claude API Pricing
+       858 -
+       859 -## Model Pricing
+       860 -
+       861 -### Claude Opus 4.7
+       862 -| Feature | Price |
+       863 -|---------|-------|
+       864 -| Input tokens | $15 / MTok |
+       865 -| Output tokens | $75 / MTok |
+       866 -| Prompt caching write | $18.75 / MTok |
+       867 -| Prompt caching read | $1.50 / MTok |
+       868 -| Batch input | $7.50 / MTok |
+       869 -| Batch output | $37.50 / MTok |
+       870 -
+       871 -### Claude Sonnet 4.6
+       872 -| Feature | Price |
+       873 -|---------|-------|
+       874 -| Input tokens | $3 / MTok |
+       875 -| Output tokens | $15 / MTok |
+       876 -| Prompt caching write | $3.75 / MTok |
+       877 -| Prompt caching read | $0.30 / MTok |
+       878 -| Batch input | $1.50 / MTok |
+       879 -| Batch output | $7.50 / MTok |
+       880 -
+       881 -### Claude Haiku 4.5
+       882 -| Feature | Price |
+       883 -|---------|-------|
+       884 -| Input tokens | $0.80 / MTok |
+       885 -| Output tokens | $4 / MTok |
+       886 -| Prompt caching write | $1 / MTok |
+       887 -| Prompt caching read | $0.08 / MTok |
+       888 -| Batch input | $0.40 / MTok |
+       889 -| Batch output | $2 / MTok |
+       890 -
+       891 -## Token Counting
+       892 -
+       893 -- 1 token ≈ 4 characters in English
+       894 -- 1,000 tokens ≈ 750 words
+       895 -- MTok = Million tokens
+       896 -
+       897 -## Free Tier
+       898 -
+       899 -The free tier includes:
+       900 -- $5 of free API credits upon signup
+       901 -- Credits expire after 30 days
+       902 -- Limited to build tier rate limits
+       903 -
+       904 -## Cost Optimization Tips
+       905 -
+       906 -1. Use prompt caching for repeated prefixes
+       907 -2. Use batch API for non-real-time workloads (50% discount)
+       908 -3. Choose the right model for your task (Haiku for simple tasks)
+       909 -4. Optimize prompt length — shorter prompts cost less
+       910 -5. Set appropriate `max_tokens` to avoid unnecessary output
+       911 -""",
+       912 -    "context-window.md": """# Context Window and Token Limits
+       913 -
+       914 -## Context Window Sizes
+       915 -
+       916 -| Model | Context Window | Max Output |
+       917 -|-------|---------------|------------|
+       918 -| Claude Opus 4.7 | 200K tokens (1M with extended) | 32,768 tokens |
+       919 -| Claude Sonnet 4.6 | 200K tokens | 16,384 tokens |
+       920 -| Claude Haiku 4.5 | 200K tokens | 8,192 tokens |
+       921 -
+       922 -## Extended Context (Opus 4.7)
+       923 -
+       924 -Claude Opus 4.7 supports an extended context window of up to 1 million tokens. This is automatically available — no special
+           - configuration needed.
+       925 -
+       926 -## Long Context Best Practices
+       927 -
+       928 -1. **Place important information at the beginning and end** — Claude attends more to these positions
+       929 -2. **Use XML tags or clear formatting** to structure long documents
+       930 -3. **Ask specific questions** rather than open-ended ones for better retrieval from long contexts
+       931 -4. **Use prompt caching** for repeated long contexts to reduce cost and latency
+       932 -
+       933 -## Token Counting
+       934 -
+       935 -You can count tokens before sending a request using the token counting API:
+       936 -
+       937 -```json
+       938 -POST /v1/messages/count_tokens
+       939 -
+       940 -{
+       941 -  "model": "claude-sonnet-4-6",
+       942 -  "messages": [
+       943 -    {"role": "user", "content": "Your message here"}
+       944 -  ]
+       945 -}
+       946 -```
+       947 -
+       948 -Response:
+       949 -```json
+       950 -{
+       951 -  "input_tokens": 15
+       952 -}
+       953 -```
+       954 -
+       955 -## Managing Context
+       956 -
+       957 -- System prompt tokens count toward the context window
+       958 -- Tool definitions count toward the context window
+       959 -- Previous conversation turns count toward the context window
+       960 -- Consider summarizing long conversations to stay within limits
+       961 -""",
+       962 -    "system-prompts.md": """# System Prompts
+       963 -
+       964 -## Overview
+       965 -
+       966 -System prompts allow you to set context, personality, and behavioral guidelines for Claude. They are processed before user
+           -messages and influence all subsequent responses.
+       967 -
+       968 -## Basic Usage
+       969 -
+       970 -```json
+       971 -{
+       972 -  "model": "claude-sonnet-4-6",
+       973 -  "max_tokens": 1024,
+       974 -  "system": "You are a helpful customer support agent for Acme Corp. Be friendly, concise, and always suggest contacting su
+           -pport@acme.com for complex issues.",
+       975 -  "messages": [
+       976 -    {"role": "user", "content": "I can't log into my account."}
+       977 -  ]
+       978 -}
+       979 -```
+       980 -
+       981 -## Multi-part System Prompts
+       982 -
+       983 -For complex setups, use an array of content blocks:
+       984 -
+       985 -```json
+       986 -{
+       987 -  "system": [
+       988 -    {
+       989 -      "type": "text",
+       990 -      "text": "You are a coding assistant.",
+       991 -      "cache_control": {"type": "ephemeral"}
+       992 -    },
+       993 -    {
+       994 -      "type": "text",
+       995 -      "text": "Here are the project guidelines: ..."
+       996 -    }
+       997 -  ]
+       998 -}
+       999 -```
+      1000 -
+      1001 -## Effective System Prompt Patterns
+      1002 -
+      1003 -### Role Definition
+      1004 -Define who Claude is in this context:
+      1005 -"You are a senior Python developer reviewing code for a fintech startup."
+      1006 -
+      1007 -### Behavioral Constraints
+      1008 -Set clear boundaries:
+      1009 -"Never provide financial advice. Always recommend consulting a professional."
+      1010 -
+      1011 -### Output Format
+      1012 -Specify response structure:
+      1013 -"Always respond in JSON format with keys: summary, details, next_steps."
+      1014 -
+      1015 -### Knowledge Scope
+      1016 -Limit what Claude discusses:
+      1017 -"Only answer questions about our product. For unrelated questions, politely redirect."
+      1018 -
+      1019 -## Best Practices
+      1020 -
+      1021 -1. Be specific and explicit about desired behavior
+      1022 -2. Include examples of ideal responses
+      1023 -3. Define edge cases and how to handle them
+      1024 -4. Keep system prompts focused and organized
+      1025 -5. Test system prompts with adversarial inputs
+      1026 -6. Use cache_control for static system prompts to reduce costs
+      1027 -""",
+      1028 -    "multimodal.md": """# Multimodal Capabilities
+      1029 -
+      1030 -## Overview
+      1031 -
+      1032 -Claude supports multimodal inputs, allowing you to combine text with images and documents in your requests. This enables ri
+           -ch interactions that leverage both visual and textual understanding.
+      1033 -
+      1034 -## Supported Input Types
+      1035 -
+      1036 -### Images
+      1037 -- Formats: JPEG, PNG, GIF, WebP
+      1038 -- Max size: 20 MB per image
+      1039 -- Max dimensions: 8192 x 8192 pixels
+      1040 -- Up to 20 images per request
+      1041 -
+      1042 -### PDFs
+      1043 -- Max size: 32 MB per PDF
+      1044 -- Max pages: 100 pages
+      1045 -- Rendered as images internally
+      1046 -
+      1047 -## Image Understanding Capabilities
+      1048 -
+      1049 -Claude can:
+      1050 -- Describe image contents
+      1051 -- Read text in images (OCR)
+      1052 -- Analyze charts and graphs
+      1053 -- Compare multiple images
+      1054 -- Answer questions about visual content
+      1055 -- Extract data from screenshots
+      1056 -
+      1057 -## PDF Analysis
+      1058 -
+      1059 -```json
+      1060 -{
+      1061 -  "model": "claude-sonnet-4-6",
+      1062 -  "max_tokens": 1024,
+      1063 -  "messages": [
+      1064 -    {
+      1065 -      "role": "user",
+      1066 -      "content": [
+      1067 -        {
+      1068 -          "type": "document",
+      1069 -          "source": {
+      1070 -            "type": "base64",
+      1071 -            "media_type": "application/pdf",
+      1072 -            "data": "JVBERi0xLjcK..."
+      1073 -          }
+      1074 -        },
+      1075 -        {
+      1076 -          "type": "text",
+      1077 -          "text": "Summarize the key findings in this report."
+      1078 -        }
+      1079 -      ]
+      1080 -    }
+      1081 -  ]
+      1082 -}
+      1083 -```
+      1084 -
+      1085 -## Best Practices
+      1086 -
+      1087 -- Place images before text in the message content array
+      1088 -- Use high-resolution images for text extraction
+      1089 -- Be specific about what you want Claude to analyze

@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import re
 import time
 from pathlib import Path
 from dotenv import load_dotenv
@@ -21,6 +22,12 @@ import httpx
 API_URL = os.getenv("API_URL", "http://localhost:8080")
 DATASET_PATH = Path(__file__).parent / "dataset.json"
 RESULTS_PATH = Path(__file__).parent / "results"
+
+JUDGE_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
+
+
+def sanitize_model_name(name: str) -> str:
+    return re.sub(r'[^\w\-.]', '-', name)
 
 
 def query_rag(question: str, top_k: int = 5) -> dict:
@@ -59,7 +66,7 @@ def collect_responses(dataset: list[dict]) -> list[dict]:
                 "model": "unknown",
                 "provider": "unknown",
             })
-        time.sleep(6)
+        time.sleep(1)
     return results
 
 
@@ -86,13 +93,13 @@ def run_deepeval_metrics(results: list[dict]) -> list[dict]:
             LLMTestCaseParams.ACTUAL_OUTPUT,
             LLMTestCaseParams.EXPECTED_OUTPUT,
         ],
-        model="meta-llama/llama-4-scout-17b-16e-instruct",
+        model=JUDGE_MODEL,
     )
 
-    faithfulness = FaithfulnessMetric(model="meta-llama/llama-4-scout-17b-16e-instruct")
-    relevancy = AnswerRelevancyMetric(model="meta-llama/llama-4-scout-17b-16e-instruct")
-    ctx_precision = ContextualPrecisionMetric(model="meta-llama/llama-4-scout-17b-16e-instruct")
-    ctx_recall = ContextualRecallMetric(model="meta-llama/llama-4-scout-17b-16e-instruct")
+    faithfulness = FaithfulnessMetric(model=JUDGE_MODEL)
+    relevancy = AnswerRelevancyMetric(model=JUDGE_MODEL)
+    ctx_precision = ContextualPrecisionMetric(model=JUDGE_MODEL)
+    ctx_recall = ContextualRecallMetric(model=JUDGE_MODEL)
 
     evaluated = []
     for i, r in enumerate(results):
@@ -124,7 +131,7 @@ def run_deepeval_metrics(results: list[dict]) -> list[dict]:
             except Exception as e:
                 print(f"    {name} failed: {e}")
                 scores[name] = None
-            time.sleep(10)
+            time.sleep(2)
 
         evaluated.append({**r, "scores": scores})
         print(f"    Scores: {scores}")
@@ -184,20 +191,33 @@ def main():
     print("Step 1: Collecting RAG responses...")
     results = collect_responses(dataset)
 
+    gen_models = {r["model"] for r in results if r["model"] != "unknown"}
+    gen_model = gen_models.pop() if len(gen_models) == 1 else "mixed"
+    gen_slug = sanitize_model_name(gen_model)
+    judge_slug = sanitize_model_name(JUDGE_MODEL)
+    file_tag = gen_slug if gen_slug == judge_slug else f"{gen_slug}--{judge_slug}"
+
     RESULTS_PATH.mkdir(exist_ok=True)
-    responses_file = RESULTS_PATH / "raw_responses.json"
-    responses_file.write_text(json.dumps(results, indent=2))
+    responses_file = RESULTS_PATH / f"raw_responses-{file_tag}.json"
+    payload = {
+        "metadata": {"generation_model": gen_model, "judge_model": JUDGE_MODEL},
+        "results": results,
+    }
+    responses_file.write_text(json.dumps(payload, indent=2))
     print(f"  Responses saved to {responses_file}")
 
-    print("\nWaiting 60 seconds for Groq rate limit to reset...")
-    time.sleep(60)
+    print("\nWaiting 10 seconds for Groq rate limit to reset...")
+    time.sleep(10)
 
     print("\nStep 2: Running evaluation metrics...")
     evaluated = run_deepeval_metrics(results)
 
-    RESULTS_PATH.mkdir(exist_ok=True)
-    output_file = RESULTS_PATH / "eval_results.json"
-    output_file.write_text(json.dumps(evaluated, indent=2))
+    output_file = RESULTS_PATH / f"eval_results-{file_tag}.json"
+    payload = {
+        "metadata": {"generation_model": gen_model, "judge_model": JUDGE_MODEL},
+        "results": evaluated,
+    }
+    output_file.write_text(json.dumps(payload, indent=2))
     print(f"\nResults saved to {output_file}")
 
     print("\n--- Aggregate Scores ---")

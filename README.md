@@ -187,7 +187,9 @@ Response includes answer with source citations, chunk IDs, relevance scores, and
 
 ## Evaluation
 
-See `eval/report.md` (70b evaluation) and `eval/report_scout.md` (Scout evaluation) for the full evaluation reports.
+Two evaluation runs were performed with different judge models:
+- `eval/report-meta-llama-llama-4-scout-17b-16e-instruct--llama-3.3-70b-versatile.md` — Scout generation + 70B judge
+- `eval/report-meta-llama-llama-4-scout-17b-16e-instruct.md` — Scout generation + Scout judge
 
 ```bash
 # Run evaluation (requires the service to be running)
@@ -217,7 +219,7 @@ All parameters are configurable via environment variables (`.env`) or `config.ya
 |-----------|---------|-------------|
 | `LLM_PROVIDER` | `groq` | LLM backend: `groq` or `ollama` |
 | `GROQ_API_KEY` | — | Groq API key (free tier) |
-| `GROQ_MODEL` | `llama-3.3-70b-versatile` | Groq model to use |
+| `GROQ_MODEL` | `meta-llama/llama-4-scout-17b-16e-instruct` | Groq model to use |
 | `OLLAMA_MODEL` | `llama3.2:3b` | Ollama model to use |
 | `EMBEDDING_MODEL` | `all-MiniLM-L6-v2` | Sentence-transformers embedding model |
 | `CHUNK_SIZE` | `512` | Chunk size in characters |
@@ -228,21 +230,22 @@ Chunking parameters can also be overridden per-request via the `/ingest` endpoin
 
 ## Known Limitations
 
-- **Groq rate limits**: 30 RPM on free tier can slow batch evaluation; daily token limits vary by model
-- **CPU inference**: Ollama with llama3.2:3b is slow on CPU-only machines (~10-30s per response)
-- **Single collection**: All documents go into one ChromaDB collection (no multi-tenant support)
-- **No streaming**: Responses are returned as a complete JSON payload, not streamed via SSE
-- **Cache has no TTL**: Cached responses persist indefinitely until cleared by re-ingestion
-- **FTS5 limitations**: Keyword search uses simple term splitting — no stemming or query expansion
+- **Table chunking splits**: Pricing and specification tables in Markdown get split across chunks, which can cause the LLM to associate the wrong value with the wrong model (e.g., returning Haiku 3.5 pricing when asked about Haiku 4.5). This was the most common failure pattern in evaluation.
+- **No retrieval confidence threshold**: The retriever always returns top-k chunks even when no relevant content exists in the corpus. For unanswerable questions, this means irrelevant context is passed to the LLM, reducing answer relevancy scores.
+- **Context window framing**: The `context-windows.md` chunk describes Opus 4.7's 1M context as an "extended" feature, which misled the LLM into framing it as non-default in multiple evaluation questions.
+- **Groq rate limits**: 30 RPM on free tier slows batch evaluation; sleep delays are required between API calls during eval runs.
+- **No streaming**: Responses are returned as a complete JSON payload, not streamed via SSE.
+- **Cache has no TTL**: Cached responses persist indefinitely until cleared by re-ingestion.
+- **FTS5 keyword search**: Uses simple term splitting with OR matching — no stemming, no query expansion, no phrase matching.
 
 ## What I Would Improve
 
-1. **Streaming responses**: Add an SSE endpoint for real-time answer streaming to improve perceived latency
-2. **Agentic features**: Auto-research agent that generates sub-questions, queries the RAG for each, and synthesizes a mini-report
-3. **Semantic chunking**: Use embedding similarity to find natural break points instead of fixed character sizes
-4. **Better evaluation**: Larger dataset (50+ questions), human evaluation alongside LLM-as-judge, A/B testing different configurations
-5. **Cache TTL**: Add expiration to cached responses so stale answers don't persist
-6. **Query expansion**: Use LLM to rewrite ambiguous queries before retrieval for better recall
+1. **Table-aware chunking**: The most impactful change. Pricing and model comparison tables get split across chunks, causing wrong values to be returned (3 of 22 eval questions failed due to this). Keeping full tables within a single chunk or adding per-row metadata (which model each price belongs to) would fix the most common failure mode.
+2. **Retrieval confidence threshold**: Currently top-k chunks are always returned regardless of relevance. Adding a minimum similarity score cutoff would filter out noise for unanswerable questions, where the retriever currently passes irrelevant context that lowers answer quality.
+3. **System prompt for ambiguous context**: The LLM sometimes picks batch pricing over standard pricing, or treats optional features as defaults. Adding explicit guidance like "prefer standard values unless the user asks about a specific variant" would reduce misinterpretation.
+4. **Streaming responses**: Add an SSE endpoint for real-time answer streaming — currently the full response is generated before returning, which adds perceived latency on slower models.
+5. **Corpus expansion**: Evaluation revealed a gap in extended thinking documentation. The corpus covers 10 Anthropic doc pages; adding pages on extended thinking, prompt caching, and the Messages API reference would improve coverage for multi-hop questions.
+6. **Query expansion**: Use the LLM to rewrite ambiguous or paraphrased queries before retrieval. Evaluation showed paraphrased questions scored lower than factual ones, suggesting the retriever struggles with alternative phrasings.
 
 ## Project Structure
 
@@ -266,7 +269,7 @@ Chunking parameters can also be overridden per-request via the `/ingest` endpoin
 ├── scripts/                 # Corpus download, data seeding
 ├── tests/                   # Unit tests
 ├── config.yaml              # Chunking and retrieval configuration
-├── docker-compose.yml       # Container orchestration (3 services)
+├── docker-compose.yml       # Container orchestration (app + ChromaDB; Ollama with --profile local)
 ├── Dockerfile               # App container with pre-downloaded models
 └── docs/claude-code-session/ # AI-assisted workflow transcript
 ```

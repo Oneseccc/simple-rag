@@ -1,3 +1,7 @@
 Config.yaml removal: Found that config.yaml and pyyaml dependency existed in the project but were never wired up to any code — dead code. Removed both along with the Dockerfile COPY line.
 
 top_k simplification: Noticed top_k was accepted as an API parameter in /query which meant the .env TOP_K value was being ignored. Removed it from the API schema and made it read from .env only, keeping configuration consistent and simple.
+
+Sleep time calculation: Calculated optimal sleep times based on Groq free tier rate limits (30 RPM, 30K TPM for Scout). Set step 1 to 5s between questions, 60s between steps for rate limit reset, and step 2 to 10s between metrics since DeepEval makes multiple internal LLM calls per metric evaluation.
+
+Eval report analysis: Manually went through raw eval JSON results, identified all failed cases beyond the auto-detected ones — found 8-9 additional failures per report. Analyzed root causes for each (table chunking splits, corpus gaps, retrieval precision issues, context framing). Wrote the failure analysis and improvement suggestions manually, then used GPT to refactor the text for clarity, better vocabulary, and more accurate technical wording.

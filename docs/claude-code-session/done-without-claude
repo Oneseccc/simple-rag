@@ -1,0 +1,3 @@
+Config.yaml removal: Found that config.yaml and pyyaml dependency existed in the project but were never wired up to any code — dead code. Removed both along with the Dockerfile COPY line.
+
+top_k simplification: Noticed top_k was accepted as an API parameter in /query which meant the .env TOP_K value was being ignored. Removed it from the API schema and made it read from .env only, keeping configuration consistent and simple.

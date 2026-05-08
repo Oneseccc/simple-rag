@@ -66,7 +66,7 @@ def collect_responses(dataset: list[dict]) -> list[dict]:
                 "model": "unknown",
                 "provider": "unknown",
             })
-        time.sleep(1)
+        time.sleep(5)
     return results
 
 
@@ -131,7 +131,7 @@ def run_deepeval_metrics(results: list[dict]) -> list[dict]:
             except Exception as e:
                 print(f"    {name} failed: {e}")
                 scores[name] = None
-            time.sleep(2)
+            time.sleep(10)
 
         evaluated.append({**r, "scores": scores})
         print(f"    Scores: {scores}")
@@ -206,8 +206,8 @@ def main():
     responses_file.write_text(json.dumps(payload, indent=2))
     print(f"  Responses saved to {responses_file}")
 
-    print("\nWaiting 10 seconds for Groq rate limit to reset...")
-    time.sleep(10)
+    print("\nWaiting 60 seconds for Groq rate limit to reset...")
+    time.sleep(60)
 
     print("\nStep 2: Running evaluation metrics...")
     evaluated = run_deepeval_metrics(results)

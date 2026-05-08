@@ -86,13 +86,13 @@ def run_deepeval_metrics(results: list[dict]) -> list[dict]:
             LLMTestCaseParams.ACTUAL_OUTPUT,
             LLMTestCaseParams.EXPECTED_OUTPUT,
         ],
-        model="llama-3.3-70b-versatile",
+        model="meta-llama/llama-4-scout-17b-16e-instruct",
     )
 
-    faithfulness = FaithfulnessMetric(model="llama-3.3-70b-versatile")
-    relevancy = AnswerRelevancyMetric(model="llama-3.3-70b-versatile")
-    ctx_precision = ContextualPrecisionMetric(model="llama-3.3-70b-versatile")
-    ctx_recall = ContextualRecallMetric(model="llama-3.3-70b-versatile")
+    faithfulness = FaithfulnessMetric(model="meta-llama/llama-4-scout-17b-16e-instruct")
+    relevancy = AnswerRelevancyMetric(model="meta-llama/llama-4-scout-17b-16e-instruct")
+    ctx_precision = ContextualPrecisionMetric(model="meta-llama/llama-4-scout-17b-16e-instruct")
+    ctx_recall = ContextualRecallMetric(model="meta-llama/llama-4-scout-17b-16e-instruct")
 
     evaluated = []
     for i, r in enumerate(results):

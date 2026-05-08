@@ -1,6 +1,6 @@
 # RAG Service — Anthropic Claude Documentation
 
-A containerized Retrieval-Augmented Generation (RAG) service that answers questions about Anthropic Claude documentation with source citations.
+A containerized Retrieval-Augmented Generation (RAG) service that answers questions about Anthropic Claude documentation with source citations. Features hybrid search (vector + keyword), cross-encoder reranking, query caching, and automatic corpus ingestion on startup.
 
 ## Architecture
 
@@ -8,32 +8,48 @@ A containerized Retrieval-Augmented Generation (RAG) service that answers questi
 graph LR
     User[User / Web UI] -->|POST /query| API[FastAPI App :8080]
     User -->|POST /ingest| API
+    API -->|Check| Cache[(SQLite Cache)]
+    Cache -->|Cache Hit| API
     API -->|Chunk + Embed| Chunker[Markdown-Aware Chunker]
     Chunker -->|Store| ChromaDB[(ChromaDB :8000)]
-    API -->|Query| ChromaDB
-    ChromaDB -->|Top-K Chunks| RAG[RAG Pipeline]
-    RAG -->|Prompt + Context| LLM{LLM Provider}
+    Chunker -->|FTS5 Index| Cache
+    API -->|Vector Search| ChromaDB
+    API -->|Keyword Search| Cache
+    ChromaDB -->|Vector Results| RRF[RRF Merge]
+    Cache -->|Keyword Results| RRF
+    RRF -->|Merged Candidates| Reranker[Cross-Encoder Reranker]
+    Reranker -->|Top-K Chunks| LLM{LLM Provider}
     LLM -->|Groq API| Groq[Groq Cloud]
     LLM -->|Ollama| Ollama[Ollama Local]
-    RAG -->|Answer + Citations| User
+    LLM -->|Answer + Citations| User
 ```
 
 ```
-┌──────────────┐     ┌─────────────────────────────────────────┐     ┌──────────────┐
-│              │     │            FastAPI App (:8080)           │     │              │
-│  User / UI   │────▶│                                         │────▶│  ChromaDB    │
-│              │     │  /ingest → Chunker → Embedder → Store   │     │  (:8000)     │
-│              │◀────│  /query  → Embed → Retrieve → LLM → Cite│◀────│              │
-│              │     │  /health → Status Check                 │     │              │
-└──────────────┘     └──────────────┬──────────────────────────┘     └──────────────┘
-                                    │
-                          ┌─────────┴─────────┐
-                          │                   │
-                    ┌─────▼─────┐      ┌──────▼─────┐
-                    │ Groq API  │      │  Ollama    │
-                    │ (default) │      │  (local)   │
-                    └───────────┘      └────────────┘
+┌──────────────┐     ┌───────────────────────────────────────────────────────┐     ┌──────────────┐
+│              │     │                FastAPI App (:8080)                    │     │              │
+│  User / UI   │────▶│                                                       │────▶│  ChromaDB    │
+│              │     │  /ingest  → Chunker → Embedder → Store + FTS5 Index  │     │  (:8000)     │
+│              │◀────│  /query   → Cache Check → Hybrid Retrieve → Rerank   │◀────│              │
+│              │     │             → LLM Generate → Cache Store → Respond   │     │              │
+│              │     │  /health  → Status Check                             │     │              │
+└──────────────┘     └──────────────┬──────────────┬────────────────────────┘     └──────────────┘
+                                    │              │
+                          ┌─────────┴────┐   ┌─────┴──────┐
+                          │              │   │            │
+                    ┌─────▼─────┐  ┌─────▼──────┐  ┌─────▼──────┐
+                    │ Groq API  │  │  Ollama    │  │  SQLite    │
+                    │ (default) │  │  (local)   │  │  Cache+FTS │
+                    └───────────┘  └────────────┘  └────────────┘
 ```
+
+### Query Pipeline Detail
+
+1. **Cache check** — SHA256 hash lookup in SQLite; if hit, return immediately
+2. **Hybrid retrieval** — Top-20 results from vector search (ChromaDB) + Top-20 from FTS5 keyword search (SQLite)
+3. **RRF merge** — Reciprocal Rank Fusion (k=60) combines both result sets, boosting chunks found by both methods
+4. **Cross-encoder reranking** — `ms-marco-MiniLM-L-6-v2` scores each (question, chunk) pair, selects final top-k
+5. **LLM generation** — Groq or Ollama generates answer grounded in the reranked context
+6. **Cache store** — Response is cached for future identical queries
 
 ## Quick Start
 
@@ -46,7 +62,7 @@ graph LR
 ```bash
 # 1. Clone and enter the project
 git clone <repo-url>
-cd hackaton
+cd simple-rag
 
 # 2. Configure environment
 cp .env.example .env
@@ -56,22 +72,19 @@ cp .env.example .env
 pip install httpx
 python scripts/download_corpus.py
 
-# 4. Start the services
+# 4. Start the services (auto-ingests corpus on first startup)
 docker compose up --build
 
-# 5. Ingest the corpus
-curl -X POST http://localhost:8080/ingest \
-  -H "Content-Type: application/json" \
-  -d '{"folder_path": "corpus/anthropic"}'
+# 5. Open the web UI
+open http://localhost:8080
 
-# 6. Ask a question
+# 6. Or query via API
 curl -X POST http://localhost:8080/query \
   -H "Content-Type: application/json" \
   -d '{"question": "What is the context window for Claude Opus 4.7?"}'
-
-# 7. Open the web UI
-open http://localhost:8080
 ```
+
+> **Note:** Manual ingestion via `curl /ingest` is no longer needed. The service automatically detects an empty ChromaDB collection on startup and ingests from `corpus/anthropic/`. On subsequent restarts, it skips ingestion if data already exists.
 
 ### Fully Local Setup (No API Key)
 
@@ -110,23 +123,56 @@ docker compose exec ollama ollama pull llama3.2:3b
 }
 ```
 
-Response includes answer with source citations and chunk IDs.
+Response includes answer with source citations, chunk IDs, relevance scores, and `retrieval_method` indicating whether each source was found via `"vector"`, `"keyword"`, or `"vector & keyword"` search.
+
+```json
+{
+  "answer": "Claude is...",
+  "sources": [
+    {
+      "chunk_id": "overview.md::Overview::chunk_0",
+      "source_file": "overview.md",
+      "section": "Overview",
+      "relevance_score": 0.8721,
+      "retrieval_method": "vector & keyword",
+      "text_preview": "Claude is an AI assistant made by Anthropic..."
+    }
+  ],
+  "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "provider": "groq"
+}
+```
 
 ## Design Decisions
 
 ### Chunking Strategy: Markdown-Aware Two-Stage Splitting
 **Choice**: `MarkdownHeaderTextSplitter` → `RecursiveCharacterTextSplitter`
-**Why**: The corpus is primarily Markdown documentation. Splitting on headers first preserves logical document structure and creates semantically meaningful sections. The second stage handles sections that exceed the chunk size limit.
+**Why**: The corpus is primarily Markdown documentation. Splitting on headers first preserves logical document structure and creates semantically meaningful sections. The second stage handles sections that exceed the chunk size limit. Chunk IDs encode the file name and header path for precise citations.
 **Tradeoff**: More complex than simple fixed-size chunking, but produces higher-quality chunks with meaningful metadata (header hierarchy for citations).
 
+### Hybrid Search: Vector + FTS5 Keyword Search
+**Choice**: ChromaDB cosine similarity + SQLite FTS5, merged via Reciprocal Rank Fusion (RRF)
+**Why**: Vector search captures semantic similarity but can miss exact keyword matches (model names, specific numbers, API parameter names). FTS5 keyword search handles exact term matching. RRF merges both ranked lists without needing tuned weights — chunks found by both methods get naturally boosted.
+**Tradeoff**: Adds a SQLite dependency (already present for query caching) and slightly increases retrieval latency, but significantly improves recall for technical queries.
+
+### Reranking: Cross-Encoder
+**Choice**: `cross-encoder/ms-marco-MiniLM-L-6-v2` reranks the merged candidate pool
+**Why**: Bi-encoder embeddings (used for initial retrieval) are fast but approximate. Cross-encoders jointly encode the (question, document) pair and produce more accurate relevance scores. Running it on the merged top-20 candidates (not the full corpus) keeps latency acceptable.
+**Tradeoff**: ~6MB model adds to Docker image size and adds ~100ms per query. Worth it for precision improvement.
+
+### Query Caching: SQLite
+**Choice**: SHA256-keyed cache in SQLite, persisted via Docker volume
+**Why**: Identical questions return instantly without hitting the LLM. SQLite is zero-dependency (Python stdlib), file-based (survives container restarts via volume), and thread-safe. The same SQLite database also serves the FTS5 keyword index.
+**Tradeoff**: No TTL/eviction — cache grows indefinitely. Acceptable for this corpus size. Cache is cleared on re-ingestion.
+
 ### LLM: Groq Free Tier (Default) + Ollama Fallback
-**Choice**: Configurable via environment variable
-**Why**: Groq provides fast inference with a 70B parameter model at no cost. Ollama provides a fully local alternative for offline use. Supporting both shows versatility without over-engineering.
+**Choice**: Configurable via `LLM_PROVIDER` environment variable
+**Why**: Groq provides fast inference with large models at no cost. Ollama provides a fully local alternative for offline use. Supporting both shows versatility without over-engineering.
 **Tradeoff**: Groq requires internet connectivity and has rate limits (30 RPM). Ollama is slower on CPU but fully offline.
 
 ### Embeddings: all-MiniLM-L6-v2 via sentence-transformers
 **Choice**: In-process embedding model, no separate service
-**Why**: At ~90MB, this model loads fast, produces 384-dimensional embeddings, and runs efficiently on CPU. No dependency on Ollama or external APIs for embeddings.
+**Why**: At ~90MB, this model loads fast, produces 384-dimensional embeddings, and runs efficiently on CPU. Pre-downloaded at Docker build time for instant startup. No dependency on Ollama or external APIs for embeddings.
 **Tradeoff**: Smaller model = lower embedding quality than 768d models like nomic-embed-text. Acceptable for this corpus size.
 
 ### Vector Store: ChromaDB
@@ -134,13 +180,14 @@ Response includes answer with source citations and chunk IDs.
 **Why**: Simplest setup among the options (ChromaDB, Qdrant, Weaviate). Clean Python API, built-in cosine similarity, good enough for <10K chunks.
 **Tradeoff**: Less production-ready than Qdrant for large-scale deployments, but ideal for this scope.
 
-### Chunk Size: 512 Characters
-**Choice**: 512 character chunks with 50 character overlap
-**Why**: Sweet spot between granularity (precise retrieval) and coherence (enough context per chunk). Configurable via environment variables and config.yaml.
+### Auto-Ingestion on Startup
+**Choice**: Automatic corpus ingestion when ChromaDB collection is empty
+**Why**: `docker compose up` should produce a fully working, queryable system with no extra steps. The service checks ChromaDB on startup — if no chunks exist, it ingests from `corpus/anthropic/`. On subsequent restarts, it skips ingestion since data persists in Docker volumes.
+**Tradeoff**: First startup takes longer (~30s for embedding + storing). Acceptable since it only runs once.
 
 ## Evaluation
 
-See `eval/report.md` for the full evaluation report.
+See `eval/report.md` (70b evaluation) and `eval/report_scout.md` (Scout evaluation) for the full evaluation reports.
 
 ```bash
 # Run evaluation (requires the service to be running)
@@ -155,39 +202,71 @@ The evaluation dataset (`eval/dataset.json`) contains 22 question-answer pairs a
 - **No-answer** (4): Test hallucination resistance
 - **Paraphrased** (3): Same questions asked differently
 
+Metrics are computed using DeepEval with Groq as the LLM judge:
+- **Faithfulness**: Is the answer grounded in the retrieved context?
+- **Answer Relevancy**: Does the answer address the question?
+- **Context Precision**: Are the retrieved chunks relevant?
+- **Context Recall**: Were all needed chunks retrieved?
+- **Answer Correctness**: Does the answer match the ground truth? (GEval)
+
+## Configuration
+
+All parameters are configurable via environment variables (`.env`) or `config.yaml`:
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `LLM_PROVIDER` | `groq` | LLM backend: `groq` or `ollama` |
+| `GROQ_API_KEY` | — | Groq API key (free tier) |
+| `GROQ_MODEL` | `llama-3.3-70b-versatile` | Groq model to use |
+| `OLLAMA_MODEL` | `llama3.2:3b` | Ollama model to use |
+| `EMBEDDING_MODEL` | `all-MiniLM-L6-v2` | Sentence-transformers embedding model |
+| `CHUNK_SIZE` | `512` | Chunk size in characters |
+| `CHUNK_OVERLAP` | `50` | Overlap between chunks |
+| `TOP_K` | `5` | Number of chunks returned after reranking |
+
+Chunking parameters can also be overridden per-request via the `/ingest` endpoint.
+
 ## Known Limitations
 
-- **Groq rate limits**: 30 RPM on free tier can slow batch evaluation
+- **Groq rate limits**: 30 RPM on free tier can slow batch evaluation; daily token limits vary by model
 - **CPU inference**: Ollama with llama3.2:3b is slow on CPU-only machines (~10-30s per response)
 - **Single collection**: All documents go into one ChromaDB collection (no multi-tenant support)
-- **No hybrid search**: Vector-only retrieval can miss exact keyword matches
-- **No reranking**: Retrieved chunks are ranked by vector similarity only
-- **Chunk boundary issues**: Recursive splitting can break mid-sentence in edge cases
+- **No streaming**: Responses are returned as a complete JSON payload, not streamed via SSE
+- **Cache has no TTL**: Cached responses persist indefinitely until cleared by re-ingestion
+- **FTS5 limitations**: Keyword search uses simple term splitting — no stemming or query expansion
 
 ## What I Would Improve
 
-1. **Reranking**: Add a cross-encoder reranker between retrieval and generation
-2. **Hybrid search**: Combine vector similarity with BM25 keyword matching
-3. **Semantic chunking**: Use embedding similarity to find natural break points
-4. **Streaming responses**: SSE endpoint for real-time answer streaming
-5. **Query caching**: Cache frequent queries to reduce LLM calls and latency
-6. **Better evaluation**: Larger dataset, human evaluation, A/B testing different configurations
+1. **Streaming responses**: Add an SSE endpoint for real-time answer streaming to improve perceived latency
+2. **Agentic features**: Auto-research agent that generates sub-questions, queries the RAG for each, and synthesizes a mini-report
+3. **Semantic chunking**: Use embedding similarity to find natural break points instead of fixed character sizes
+4. **Better evaluation**: Larger dataset (50+ questions), human evaluation alongside LLM-as-judge, A/B testing different configurations
+5. **Cache TTL**: Add expiration to cached responses so stale answers don't persist
+6. **Query expansion**: Use LLM to rewrite ambiguous queries before retrieval for better recall
 
 ## Project Structure
 
 ```
 ├── src/
-│   ├── main.py              # FastAPI app entry point
+│   ├── main.py              # FastAPI app, auto-ingest on startup
 │   ├── config.py            # Configuration (pydantic-settings)
-│   ├── api/                 # REST API endpoints
-│   ├── core/                # Core logic (chunker, embedder, LLM, RAG)
+│   ├── api/                 # REST API endpoints (ingest, query, health)
+│   ├── core/                # Core logic
+│   │   ├── chunker.py       # Markdown-aware two-stage chunking
+│   │   ├── embedder.py      # Sentence-transformers embeddings
+│   │   ├── vectorstore.py   # ChromaDB vector store
+│   │   ├── rag.py           # RAG pipeline with hybrid search + RRF
+│   │   ├── reranker.py      # Cross-encoder reranking
+│   │   ├── cache.py         # SQLite query cache + FTS5 keyword index
+│   │   └── llm.py           # LLM providers (Groq + Ollama)
 │   ├── models/              # Pydantic schemas
 │   └── static/              # Web UI
 ├── corpus/anthropic/        # Documentation corpus
-├── eval/                    # Evaluation dataset, runner, report
+├── eval/                    # Evaluation dataset, runner, reports
 ├── scripts/                 # Corpus download, data seeding
 ├── tests/                   # Unit tests
-├── docker-compose.yml       # Container orchestration
-├── Dockerfile               # App container
+├── config.yaml              # Chunking and retrieval configuration
+├── docker-compose.yml       # Container orchestration (3 services)
+├── Dockerfile               # App container with pre-downloaded models
 └── docs/claude-code-session/ # AI-assisted workflow transcript
 ```

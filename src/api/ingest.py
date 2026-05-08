@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException
 from pathlib import Path
 
 from src.config import settings
+from src.core.cache import get_cache
 from src.core.chunker import chunk_documents
 from src.core.embedder import get_embedder
 from src.core.vectorstore import get_vectorstore
@@ -72,6 +73,10 @@ async def ingest_documents(request: IngestRequest):
         embeddings=embeddings,
         metadatas=metadatas,
     )
+
+    cache = get_cache()
+    cache.clear()
+    cache.index_chunks(all_chunks)
 
     return IngestResponse(
         documents_processed=docs_processed,

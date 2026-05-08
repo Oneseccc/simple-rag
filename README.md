@@ -110,6 +110,13 @@ docker compose --profile local up --build
 docker compose exec ollama ollama pull llama3.2:3b
 ```
 
+> **Note:** Switching `LLM_PROVIDER` in `.env` requires a rebuild for the change to take effect. Use `--profile local` when switching to Ollama so the Ollama container is included:
+> ```bash
+> docker compose down
+> docker compose up --build                          # Groq
+> docker compose --profile local up --build          # Ollama
+> ```
+
 ## API Endpoints
 
 | Endpoint | Method | Description |
@@ -206,13 +213,14 @@ Two evaluation runs were performed with different judge models:
 
 ```bash
 # Run evaluation (requires the service to be running)
-
-# On Linux (global pip install is blocked, use a virtual environment):
-python3 -m venv venv && source venv/bin/activate
-
 pip install -r requirements-eval.txt
 python eval/run_eval.py && python eval/report_generator.py
 ```
+
+> **Note (Linux):** Most Linux distributions block global pip installs. Create a virtual environment first:
+> ```bash
+> python3 -m venv venv && source venv/bin/activate
+> ```
 
 > **Note:** Step 1 (RAG response collection) uses whichever LLM provider is set in `.env` (`groq` or `ollama`). Step 2 (evaluation metrics) always requires a Groq API key — DeepEval uses Groq's OpenAI-compatible endpoint as the LLM judge, regardless of `LLM_PROVIDER`. Even fully local setups need a valid `GROQ_API_KEY` in `.env` to run evaluation.
 

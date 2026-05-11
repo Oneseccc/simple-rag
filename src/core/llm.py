@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 
 import httpx
-from groq import Groq
+from groq import AsyncGroq
 
 from src.config import settings
 
@@ -21,7 +21,7 @@ class LLMProvider(ABC):
 
 class GroqProvider(LLMProvider):
     def __init__(self):
-        self._client = Groq(api_key=settings.GROQ_API_KEY)
+        self._client = AsyncGroq(api_key=settings.GROQ_API_KEY)
         self._model = settings.GROQ_MODEL
 
     async def generate(self, prompt: str, system_prompt: str = "") -> str:
@@ -30,7 +30,7 @@ class GroqProvider(LLMProvider):
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": prompt})
 
-        response = self._client.chat.completions.create(
+        response = await self._client.chat.completions.create(
             model=self._model,
             messages=messages,
             temperature=0.1,
